@@ -1,7 +1,6 @@
 # AgentBill
 
-AI Test Project - A web agent that reads an image of a bill, schedule on Google
-Agenda and reports on a Google Spreadsheet
+AI Test Project - A web agent that reads an image of a bill, schedule on Google Agenda and reports on a Google Spreadsheet
 
 ## Descrição Geral do Projeto: Agent Bill
 
@@ -10,3 +9,9 @@ Agent Bill é um assistente digital projetado para automatizar o gerenciamento d
 O sistema integra-se diretamente com Google Sheets, onde todas as contas processadas são armazenadas, e com Google Calendar, criando lembretes automáticos para evitar atrasos nos pagamentos. Tudo isso é acessível por meio de uma interface web no Google Sites, sem necessidade de instalação ou servidores próprios.
 
 Utilizando Google Apps Script para automação e a API OpenAI Vision para leitura de documentos, o Agent Bill oferece uma solução eficiente, segura e sem complicações para quem precisa manter suas contas organizadas.
+
+## Documentation
+
+For more details about how the project integrates with Google services and OpenAI, see [docs/overview.md](docs/overview.md).
+
+High level user stories and requirements are stored in the [docs/user_stories.md](docs/user_stories.md) file. Consult this document for the list of planned features and their acceptance criteria.
