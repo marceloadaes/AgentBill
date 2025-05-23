@@ -1,0 +1,9 @@
+node_modules/
+creds.json
+
+# Local clasp settings
+.clasp-dev.json
+
+# Logs
+npm-debug.log*
+
