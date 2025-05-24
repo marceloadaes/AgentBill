@@ -1,9 +1,6 @@
 node_modules/
-creds.json
-
-# Local clasp settings
-.clasp-dev.json
+.next/
+.env.local
 
 # Logs
 npm-debug.log*
-
