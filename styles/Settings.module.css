@@ -70,3 +70,21 @@
   font-size: 0.9rem;
   color: #555;
 }
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.profileIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.notConnected {
+  color: #d32f2f;
+  font-weight: bold;
+}
