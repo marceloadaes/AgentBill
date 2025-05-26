@@ -9,6 +9,12 @@ const Settings: NextPage = () => {
   const [connected, setConnected] = useState(false);
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
+  const [openAIKey, setOpenAIKey] = useState('');
+
+  useEffect(() => {
+    const storedKey = localStorage.getItem('openaiKey') || '';
+    setOpenAIKey(storedKey);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('googleToken');
@@ -52,12 +58,37 @@ const Settings: NextPage = () => {
     setIsError(false);
   };
 
+  const isValidOpenAIKey = (key: string) => key.startsWith('sk-') && key.length > 40;
+
+  const saveKey = () => {
+    if (!isValidOpenAIKey(openAIKey)) {
+      alert('Invalid OpenAI API key.');
+      return;
+    }
+    localStorage.setItem('openaiKey', openAIKey);
+    setMessage('OpenAI API key saved!');
+    setIsError(false);
+  };
+
   return (
     <Layout>
       <h2>Settings</h2>
       {message && (
         <div className={`${styles.message} ${isError ? styles.error : styles.success}`}>{message}</div>
       )}
+      <div className={styles.section}>
+        <label htmlFor="openaiKey">OpenAI API Key:</label>
+        <input
+          id="openaiKey"
+          type="text"
+          value={openAIKey}
+          onChange={(e) => setOpenAIKey(e.target.value)}
+          className={styles.input}
+        />
+        <button onClick={saveKey} className={styles.button}>
+          Save Key
+        </button>
+      </div>
       {connected ? (
         <button onClick={disconnect} className={styles.button}>
           Disconnect Google

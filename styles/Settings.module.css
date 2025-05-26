@@ -18,3 +18,16 @@
   padding: 0.5rem 1rem;
   font-size: 1rem;
 }
+
+.section {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+}
+
+.input {
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
