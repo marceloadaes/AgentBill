@@ -17,11 +17,13 @@ export default function Layout({ children }: Props) {
           <Link href="/spreadsheet">Spreadsheet</Link>
           <Link href="/history">History</Link>
           <Link href="/settings">Settings</Link>
-          <Link href="/privacy">Privacy Policy</Link>
-          <Link href="/terms">Terms of Service</Link>
         </nav>
       </header>
       <main className={styles.main}>{children}</main>
+      <footer className={styles.footer}>
+        <Link href="/privacy">Privacy Policy</Link> |{' '}
+        <Link href="/terms">Terms of Service</Link>
+      </footer>
     </div>
   );
 }
