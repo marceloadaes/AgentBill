@@ -11,6 +11,7 @@ const Settings: NextPage = () => {
   const [isError, setIsError] = useState(false);
   const [openAIKey, setOpenAIKey] = useState('');
   const [keyStored, setKeyStored] = useState(false);
+  const [showRetry, setShowRetry] = useState(false);
 
   useEffect(() => {
     fetch('/api/config')
@@ -26,9 +27,13 @@ const Settings: NextPage = () => {
       setMessage('Google account connected!');
       setIsError(false);
       setConnected(true);
+      setShowRetry(false);
     } else if (router.query.status === 'error') {
       setMessage('Failed to authenticate with Google.');
       setIsError(true);
+      setShowRetry(true);
+    } else {
+      setShowRetry(false);
     }
   }, [router.query.status]);
 
@@ -63,7 +68,8 @@ const Settings: NextPage = () => {
 
   const saveKey = () => {
     if (!isValidOpenAIKey(openAIKey)) {
-      alert('Invalid OpenAI API key.');
+      setMessage('Invalid OpenAI API key.');
+      setIsError(true);
       return;
     }
     fetch('/api/config', {
@@ -90,7 +96,13 @@ const Settings: NextPage = () => {
     <Layout>
       <h2>Settings</h2>
       {message && (
-        <div className={`${styles.message} ${isError ? styles.error : styles.success}`}>{message}</div>
+        <div className={`${styles.message} ${isError ? styles.error : styles.success}`}>{message}
+          {showRetry && (
+            <button onClick={connect} className={styles.button} style={{ marginLeft: '0.5rem' }}>
+              Retry
+            </button>
+          )}
+        </div>
       )}
       <div className={styles.section}>
         <label htmlFor="openaiKey">OpenAI API Key:</label>
