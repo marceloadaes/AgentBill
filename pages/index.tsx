@@ -23,14 +23,6 @@ const Home: NextPage = () => {
           <h2>Settings &rarr;</h2>
           <p>Configure your Google integration.</p>
         </Link>
-        <Link href="/privacy" className={styles.card}>
-          <h2>Privacy Policy &rarr;</h2>
-          <p>Leia nossa política de privacidade.</p>
-        </Link>
-        <Link href="/terms" className={styles.card}>
-          <h2>Terms of Service &rarr;</h2>
-          <p>Veja os termos que regem o uso do site.</p>
-        </Link>
       </div>
     </Layout>
   );
