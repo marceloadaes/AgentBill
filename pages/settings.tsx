@@ -10,15 +10,15 @@ const Settings: NextPage = () => {
   const [message, setMessage] = useState('');
   const [isError, setIsError] = useState(false);
   const [openAIKey, setOpenAIKey] = useState('');
+  const [keyStored, setKeyStored] = useState(false);
 
   useEffect(() => {
-    const storedKey = localStorage.getItem('openaiKey') || '';
-    setOpenAIKey(storedKey);
-  }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem('googleToken');
-    setConnected(!!token);
+    fetch('/api/config')
+      .then((res) => res.json())
+      .then((data) => {
+        setConnected(data.hasGoogleToken);
+        setKeyStored(data.hasOpenAIKey);
+      });
   }, []);
 
   useEffect(() => {
@@ -52,10 +52,11 @@ const Settings: NextPage = () => {
   };
 
   const disconnect = () => {
-    localStorage.removeItem('googleToken');
-    setConnected(false);
-    setMessage('Google account disconnected.');
-    setIsError(false);
+    fetch('/api/config?key=google', { method: 'DELETE' }).then(() => {
+      setConnected(false);
+      setMessage('Google account disconnected.');
+      setIsError(false);
+    });
   };
 
   const isValidOpenAIKey = (key: string) => key.startsWith('sk-') && key.length > 40;
@@ -65,9 +66,24 @@ const Settings: NextPage = () => {
       alert('Invalid OpenAI API key.');
       return;
     }
-    localStorage.setItem('openaiKey', openAIKey);
-    setMessage('OpenAI API key saved!');
-    setIsError(false);
+    fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ openaiKey }),
+    }).then(() => {
+      setKeyStored(true);
+      setOpenAIKey('');
+      setMessage('OpenAI API key saved!');
+      setIsError(false);
+    });
+  };
+
+  const deleteKey = () => {
+    fetch('/api/config?key=openai', { method: 'DELETE' }).then(() => {
+      setKeyStored(false);
+      setMessage('OpenAI API key removed.');
+      setIsError(false);
+    });
   };
 
   return (
@@ -88,6 +104,14 @@ const Settings: NextPage = () => {
         <button onClick={saveKey} className={styles.button}>
           Save Key
         </button>
+        {keyStored && (
+          <>
+            <span className={styles.note}>Key stored securely</span>
+            <button onClick={deleteKey} className={styles.button}>
+              Remove Key
+            </button>
+          </>
+        )}
       </div>
       {connected ? (
         <button onClick={disconnect} className={styles.button}>
