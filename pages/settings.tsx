@@ -14,6 +14,7 @@ const Settings: NextPage = () => {
   const [showRetry, setShowRetry] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [userIcon, setUserIcon] = useState('');
+  const [userName, setUserName] = useState('');
 
   useEffect(() => {
     fetch('/api/config')
@@ -31,14 +32,17 @@ const Settings: NextPage = () => {
         .then((data) => {
           setUserEmail(data.email);
           setUserIcon(data.picture);
+          setUserName(data.name);
         })
         .catch(() => {
           setUserEmail('');
           setUserIcon('');
+          setUserName('');
         });
     } else {
       setUserEmail('');
       setUserIcon('');
+      setUserName('');
     }
   }, [connected]);
 
@@ -155,7 +159,7 @@ const Settings: NextPage = () => {
                 {userIcon && (
                   <img src={userIcon} alt="account" className={styles.profileIcon} />
                 )}
-                <span>{userEmail}</span>
+                <span>{userName} ({userEmail})</span>
               </>
             ) : (
               <>
