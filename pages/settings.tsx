@@ -27,8 +27,15 @@ const Settings: NextPage = () => {
   }, [router.query.status]);
 
   const connect = () => {
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      setMessage('Google OAuth client ID is not configured.');
+      setIsError(true);
+      return;
+    }
+
     const params = new URLSearchParams({
-      client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+      client_id: clientId,
       redirect_uri: `${window.location.origin}/oauth2callback`,
       response_type: 'token',
       scope:
