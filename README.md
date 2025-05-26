@@ -10,6 +10,7 @@ High level user stories and requirements are stored in the [docs/user_stories.md
 
 ## Google OAuth Setup
 
+
 Set the `NEXT_PUBLIC_GOOGLE_CLIENT_ID` environment variable with the client ID of your Google OAuth application. The redirect URL should point to `/oauth2callback` on your deployed site. Once configured, you can connect or disconnect your Google account from the **Settings** page. If the variable is missing, the **Connect** button will display an error and no OAuth request will be made.
 
 ## Deployment
