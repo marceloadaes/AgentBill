@@ -11,8 +11,13 @@ export default function OAuthCallback() {
       const params = new URLSearchParams(hash);
       const token = params.get('access_token');
       if (token) {
-        localStorage.setItem('googleToken', token);
-        router.replace('/settings?status=success');
+        fetch('/api/config', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ googleToken: token }),
+        })
+          .then(() => router.replace('/settings?status=success'))
+          .catch(() => router.replace('/settings?status=error'));
       } else {
         router.replace('/settings?status=error');
       }
