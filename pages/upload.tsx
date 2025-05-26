@@ -3,8 +3,8 @@ import Layout from '../components/Layout';
 
 const Upload: NextPage = () => (
   <Layout>
-    <h2>Upload Bill</h2>
-    <p>This is a placeholder page for uploading bills.</p>
+    <h2>Enviar Conta</h2>
+    <p>Esta é uma página temporária para envio de contas.</p>
   </Layout>
 );
 

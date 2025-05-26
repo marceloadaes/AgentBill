@@ -26,7 +26,7 @@ export default function OAuthCallback() {
 
   return (
     <Layout>
-      <p>Processing authentication...</p>
+      <p>Processando autenticação...</p>
     </Layout>
   );
 }
