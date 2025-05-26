@@ -29,7 +29,7 @@ const Settings: NextPage = () => {
       setConnected(true);
       setShowRetry(false);
     } else if (router.query.status === 'error') {
-      setMessage('Failed to authenticate with Google.');
+      setMessage('Failed to authenticate with Google. Please make sure you granted access and try again.');
       setIsError(true);
       setShowRetry(true);
     } else {
@@ -40,7 +40,7 @@ const Settings: NextPage = () => {
   const connect = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
-      setMessage('Google OAuth client ID is not configured.');
+      setMessage('Google OAuth client ID is not configured. Set the NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable.');
       setIsError(true);
       return;
     }
@@ -68,7 +68,7 @@ const Settings: NextPage = () => {
 
   const saveKey = () => {
     if (!isValidOpenAIKey(openAIKey)) {
-      setMessage('Invalid OpenAI API key.');
+      setMessage('Invalid OpenAI API key. The key should start with \"sk-\" and can be generated from your OpenAI account page.');
       setIsError(true);
       return;
     }
@@ -104,36 +104,42 @@ const Settings: NextPage = () => {
           )}
         </div>
       )}
-      <div className={styles.section}>
-        <label htmlFor="openaiKey">OpenAI API Key:</label>
-        <input
-          id="openaiKey"
-          type="text"
-          value={openAIKey}
-          onChange={(e) => setOpenAIKey(e.target.value)}
-          className={styles.input}
-        />
-        <button onClick={saveKey} className={styles.button}>
-          Save Key
-        </button>
-        {keyStored && (
-          <>
-            <span className={styles.note}>Key stored securely</span>
-            <button onClick={deleteKey} className={styles.button}>
-              Remove Key
+      <div className={styles.sections}>
+        <div className={`${styles.section} ${styles.openAISection}`}>
+          <h3 className={styles.sectionTitle}>OpenAI Settings</h3>
+          <label htmlFor="openaiKey">OpenAI API Key:</label>
+          <input
+            id="openaiKey"
+            type="text"
+            value={openAIKey}
+            onChange={(e) => setOpenAIKey(e.target.value)}
+            className={styles.input}
+          />
+          <button onClick={saveKey} className={styles.button}>
+            Save Key
+          </button>
+          {keyStored && (
+            <>
+              <span className={styles.note}>Key stored securely</span>
+              <button onClick={deleteKey} className={styles.button}>
+                Remove Key
+              </button>
+            </>
+          )}
+        </div>
+        <div className={`${styles.section} ${styles.googleSection}`}>
+          <h3 className={styles.sectionTitle}>Google Settings</h3>
+          {connected ? (
+            <button onClick={disconnect} className={styles.button}>
+              Disconnect Google
             </button>
-          </>
-        )}
+          ) : (
+            <button onClick={connect} className={styles.button}>
+              Connect Google
+            </button>
+          )}
+        </div>
       </div>
-      {connected ? (
-        <button onClick={disconnect} className={styles.button}>
-          Disconnect Google
-        </button>
-      ) : (
-        <button onClick={connect} className={styles.button}>
-          Connect Google
-        </button>
-      )}
     </Layout>
   );
 };
