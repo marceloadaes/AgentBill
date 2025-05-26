@@ -12,6 +12,8 @@ const Settings: NextPage = () => {
   const [openAIKey, setOpenAIKey] = useState('');
   const [keyStored, setKeyStored] = useState(false);
   const [showRetry, setShowRetry] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userIcon, setUserIcon] = useState('');
 
   useEffect(() => {
     fetch('/api/config')
@@ -21,6 +23,24 @@ const Settings: NextPage = () => {
         setKeyStored(data.hasOpenAIKey);
       });
   }, []);
+
+  useEffect(() => {
+    if (connected) {
+      fetch('/api/userinfo')
+        .then((res) => (res.ok ? res.json() : Promise.reject()))
+        .then((data) => {
+          setUserEmail(data.email);
+          setUserIcon(data.picture);
+        })
+        .catch(() => {
+          setUserEmail('');
+          setUserIcon('');
+        });
+    } else {
+      setUserEmail('');
+      setUserIcon('');
+    }
+  }, [connected]);
 
   useEffect(() => {
     if (router.query.status === 'success') {
@@ -129,6 +149,21 @@ const Settings: NextPage = () => {
         </div>
         <div className={`${styles.section} ${styles.googleSection}`}>
           <h3 className={styles.sectionTitle}>Google Settings</h3>
+          <div className={styles.status}>
+            {connected ? (
+              <>
+                {userIcon && (
+                  <img src={userIcon} alt="account" className={styles.profileIcon} />
+                )}
+                <span>{userEmail}</span>
+              </>
+            ) : (
+              <>
+                <span className={styles.notConnected}>X</span>
+                <span className={styles.notConnected}>Not connected</span>
+              </>
+            )}
+          </div>
           {connected ? (
             <button onClick={disconnect} className={styles.button}>
               Disconnect Google
