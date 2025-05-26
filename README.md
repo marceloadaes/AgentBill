@@ -13,6 +13,10 @@ High level user stories and requirements are stored in the [docs/user_stories.md
 
 Set the `NEXT_PUBLIC_GOOGLE_CLIENT_ID` environment variable with the client ID of your Google OAuth application. The redirect URL should point to `/oauth2callback` on your deployed site. Once configured, you can connect or disconnect your Google account from the **Settings** page. If the variable is missing, the **Connect** button will display an error and no OAuth request will be made.
 
+## Secure Configuration Storage
+
+The Settings page persists the Google OAuth token and your OpenAI API key using HTTP-only cookies. These cookies are set via the `/api/config` endpoint and cannot be accessed from JavaScript, providing basic protection against XSS. The stored values remain available after a page refresh. You can remove them at any time using the **Disconnect Google** or **Remove Key** buttons.
+
 ## Deployment
 
 The repository includes a GitHub Actions workflow that deploys the Next.js application to Vercel whenever changes are pushed to `main`. Setup instructions are available in [docs/deploy_vercel.md](docs/deploy_vercel.md).
