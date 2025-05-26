@@ -1,7 +1,5 @@
 # High Level User Stories
-
 The following table lists the high level user stories for AgentBill. Each row includes the code for reference, a short description, and the acceptance criteria.
-
 | Code | Description | Acceptance Criteria |
 |------|-------------|---------------------|
 | US001 | Como usuário, quero definir o nome da planilha para armazenar minhas contas. | - O sistema deve permitir que eu insira o nome da planilha.<br>- Caso eu não informe um nome, o sistema deve sugerir um nome padrão (ex: 'Minhas Contas').<br>- Se a planilha não existir, deve ser criada automaticamente. |
@@ -22,4 +20,4 @@ The following table lists the high level user stories for AgentBill. Each row in
 | US018 | Como usuário, quero que a aplicação exiba um status das minhas contas. | - O sistema exibe uma tabela com todas as contas já cadastradas e seu status.<br>- Deve permitir filtrar por contas pagas, vencidas e pendentes. |
 | US019 | Como usuário, quero marcar contas como pagas manualmente. | - O usuário pode clicar em um botão para marcar uma conta como paga.<br>- O sistema adiciona um timestamp da data de pagamento e remove ou ajusta o lembrete correspondente no calendário. |
 | US020 | Como usuário, quero receber um e-mail de lembrete antes do vencimento da conta. | - O sistema deve enviar um e-mail um dia antes do vencimento da conta.<br>- O e-mail deve conter detalhes da conta e um link para visualizar na planilha. |
-
+| US021 | Como usuário, quero configurar minhas integrações (Google e OpenAI API Key) na página "Settings". | - A página deve permitir conectar ou desconectar minha conta Google.<br>- Deve haver campo para inserir e salvar a OpenAI API Key com segurança. |
