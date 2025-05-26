@@ -8,20 +8,20 @@ const Home: NextPage = () => {
     <Layout>
       <div className={styles.grid}>
         <Link href="/upload" className={styles.card}>
-          <h2>Upload Bill &rarr;</h2>
-          <p>Send an image or PDF for processing.</p>
+          <h2>Enviar Conta &rarr;</h2>
+          <p>Envie uma imagem ou PDF para processamento.</p>
         </Link>
         <Link href="/spreadsheet" className={styles.card}>
-          <h2>Spreadsheet &rarr;</h2>
-          <p>View all your bills in Google Sheets.</p>
+          <h2>Planilha &rarr;</h2>
+          <p>Veja todas as suas contas no Google Sheets.</p>
         </Link>
         <Link href="/history" className={styles.card}>
-          <h2>History &rarr;</h2>
-          <p>Check previously processed files.</p>
+          <h2>Histórico &rarr;</h2>
+          <p>Veja arquivos processados anteriormente.</p>
         </Link>
         <Link href="/settings" className={styles.card}>
-          <h2>Settings &rarr;</h2>
-          <p>Configure your Google integration.</p>
+          <h2>Configurações &rarr;</h2>
+          <p>Configure sua integração com o Google.</p>
         </Link>
       </div>
     </Layout>

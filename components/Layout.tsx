@@ -12,17 +12,17 @@ export default function Layout({ children }: Props) {
       <header className={styles.header}>
         <h1 className={styles.title}>Agent Bill</h1>
         <nav className={styles.nav}>
-          <Link href="/">Home</Link>
-          <Link href="/upload">Upload Bill</Link>
-          <Link href="/spreadsheet">Spreadsheet</Link>
-          <Link href="/history">History</Link>
-          <Link href="/settings">Settings</Link>
+          <Link href="/">Início</Link>
+          <Link href="/upload">Enviar Conta</Link>
+          <Link href="/spreadsheet">Planilha</Link>
+          <Link href="/history">Histórico</Link>
+          <Link href="/settings">Configurações</Link>
         </nav>
       </header>
       <main className={styles.main}>{children}</main>
       <footer className={styles.footer}>
-        <Link href="/privacy">Privacy Policy</Link> |{' '}
-        <Link href="/terms">Terms of Service</Link>
+        <Link href="/privacy">Política de Privacidade</Link> |{' '}
+        <Link href="/terms">Termos de Serviço</Link>
       </footer>
     </div>
   );

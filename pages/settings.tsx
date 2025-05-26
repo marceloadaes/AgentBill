@@ -44,12 +44,12 @@ const Settings: NextPage = () => {
 
   useEffect(() => {
     if (router.query.status === 'success') {
-      setMessage('Google account connected!');
+      setMessage('Conta do Google conectada!');
       setIsError(false);
       setConnected(true);
       setShowRetry(false);
     } else if (router.query.status === 'error') {
-      setMessage('Failed to authenticate with Google. Please make sure you granted access and try again.');
+      setMessage('Falha ao autenticar com o Google. Certifique-se de conceder acesso e tente novamente.');
       setIsError(true);
       setShowRetry(true);
     } else {
@@ -60,7 +60,7 @@ const Settings: NextPage = () => {
   const connect = () => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
-      setMessage('Google OAuth client ID is not configured. Set the NEXT_PUBLIC_GOOGLE_CLIENT_ID environment variable.');
+      setMessage('ID de cliente do Google OAuth não configurado. Defina a variável de ambiente NEXT_PUBLIC_GOOGLE_CLIENT_ID.');
       setIsError(true);
       return;
     }
@@ -79,7 +79,7 @@ const Settings: NextPage = () => {
   const disconnect = () => {
     fetch('/api/config?key=google', { method: 'DELETE' }).then(() => {
       setConnected(false);
-      setMessage('Google account disconnected.');
+      setMessage('Conta do Google desconectada.');
       setIsError(false);
     });
   };
@@ -88,7 +88,7 @@ const Settings: NextPage = () => {
 
   const saveKey = () => {
     if (!isValidOpenAIKey(openAIKey)) {
-      setMessage('Invalid OpenAI API key. The key should start with \"sk-\" and can be generated from your OpenAI account page.');
+      setMessage('Chave da API do OpenAI inválida. Ela deve começar com "sk-" e pode ser gerada na página da sua conta OpenAI.');
       setIsError(true);
       return;
     }
@@ -99,7 +99,7 @@ const Settings: NextPage = () => {
     }).then(() => {
       setKeyStored(true);
       setOpenAIKey('');
-      setMessage('OpenAI API key saved!');
+      setMessage('Chave da API do OpenAI salva!');
       setIsError(false);
     });
   };
@@ -107,27 +107,27 @@ const Settings: NextPage = () => {
   const deleteKey = () => {
     fetch('/api/config?key=openai', { method: 'DELETE' }).then(() => {
       setKeyStored(false);
-      setMessage('OpenAI API key removed.');
+      setMessage('Chave da API do OpenAI removida.');
       setIsError(false);
     });
   };
 
   return (
     <Layout>
-      <h2>Settings</h2>
+      <h2>Configurações</h2>
       {message && (
         <div className={`${styles.message} ${isError ? styles.error : styles.success}`}>{message}
           {showRetry && (
             <button onClick={connect} className={styles.button} style={{ marginLeft: '0.5rem' }}>
-              Retry
+              Tentar novamente
             </button>
           )}
         </div>
       )}
       <div className={styles.sections}>
         <div className={`${styles.section} ${styles.openAISection}`}>
-          <h3 className={styles.sectionTitle}>OpenAI Settings</h3>
-          <label htmlFor="openaiKey">OpenAI API Key:</label>
+          <h3 className={styles.sectionTitle}>Configurações do OpenAI</h3>
+          <label htmlFor="openaiKey">Chave da API do OpenAI:</label>
           <input
             id="openaiKey"
             type="text"
@@ -136,19 +136,19 @@ const Settings: NextPage = () => {
             className={styles.input}
           />
           <button onClick={saveKey} className={styles.button}>
-            Save Key
+            Salvar chave
           </button>
           {keyStored && (
             <>
-              <span className={styles.note}>Key stored securely</span>
+              <span className={styles.note}>Chave armazenada com segurança</span>
               <button onClick={deleteKey} className={styles.button}>
-                Remove Key
+                Remover chave
               </button>
             </>
           )}
         </div>
         <div className={`${styles.section} ${styles.googleSection}`}>
-          <h3 className={styles.sectionTitle}>Google Settings</h3>
+          <h3 className={styles.sectionTitle}>Configurações do Google</h3>
           <div className={styles.status}>
             {connected ? (
               <>
@@ -160,17 +160,17 @@ const Settings: NextPage = () => {
             ) : (
               <>
                 <span className={styles.notConnected}>X</span>
-                <span className={styles.notConnected}>Not connected</span>
+                <span className={styles.notConnected}>Não conectado</span>
               </>
             )}
           </div>
           {connected ? (
             <button onClick={disconnect} className={styles.button}>
-              Disconnect Google
+              Desconectar Google
             </button>
           ) : (
             <button onClick={connect} className={styles.button}>
-              Connect Google
+              Conectar Google
             </button>
           )}
         </div>

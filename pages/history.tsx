@@ -3,8 +3,8 @@ import Layout from '../components/Layout';
 
 const History: NextPage = () => (
   <Layout>
-    <h2>History</h2>
-    <p>Here you will find previously processed files.</p>
+    <h2>Histórico</h2>
+    <p>Aqui você encontrará arquivos processados anteriormente.</p>
   </Layout>
 );
 
