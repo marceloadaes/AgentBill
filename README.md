@@ -12,6 +12,7 @@ High level user stories and requirements are stored in the [docs/user_stories.md
 
 Set the `NEXT_PUBLIC_GOOGLE_CLIENT_ID` environment variable with the client ID of your Google OAuth application. The redirect URL should point to `/oauth2callback` on your deployed site. This variable must be provided when the app is built. If it is missing, the **Connect Google** button will show an error instead of redirecting to Google.
 
+
 ## Deployment
 
 The repository includes a GitHub Actions workflow that deploys the Next.js application to Vercel whenever changes are pushed to `main`. Setup instructions are available in [docs/deploy_vercel.md](docs/deploy_vercel.md).
