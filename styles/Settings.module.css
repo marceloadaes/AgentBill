@@ -71,6 +71,12 @@
   color: #555;
 }
 
+.instructions {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0.5rem 0;
+}
+
 .status {
   display: flex;
   align-items: center;
