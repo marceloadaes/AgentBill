@@ -10,10 +10,6 @@ export default function Layout({ children }: Props) {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.branding}>
-          <img src="/AgentBillLogo.png" alt="Agent Bill logo" className={styles.logo} />
-          <h1 className={styles.title}>Agent Bill</h1>
-        </div>
         <nav className={styles.nav}>
           <Link href="/">Início</Link>
           <Link href="/upload">Enviar Conta</Link>
@@ -21,6 +17,9 @@ export default function Layout({ children }: Props) {
           <Link href="/settings">Configurações</Link>
         </nav>
       </header>
+      <div className={styles.logoContainer}>
+        <img src="/AgentBillLogo.png" alt="Agent Bill logo" className={styles.logo} />
+      </div>
       <main className={styles.main}>{children}</main>
       <footer className={styles.footer}>
         <Link href="/privacy">Política de Privacidade</Link> |{' '}
