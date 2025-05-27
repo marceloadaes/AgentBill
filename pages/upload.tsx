@@ -104,21 +104,26 @@ const Upload: NextPage = () => {
   const sendToSheet = async () => {
     if (!result) return;
     setSheetStatus('Enviando para a planilha...');
-    const res = await fetch('/api/sheets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(result.fields),
-    });
-    if (res.ok) {
-      setSheetStatus('Conta adicionada à planilha!');
-    } else {
-      const text = await res.text();
-      let msg = text;
-      try {
-        msg = JSON.parse(text).error || text;
-      } catch {
-        // ignore
+    try {
+      const res = await fetch('/api/sheets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(result.fields),
+      });
+      if (res.ok) {
+        setSheetStatus('Conta adicionada à planilha!');
+      } else {
+        const text = await res.text();
+        let msg = text;
+        try {
+          msg = JSON.parse(text).error || text;
+        } catch {
+          // ignore
+        }
+        setSheetStatus(`Erro ao adicionar: ${msg}`);
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
       setSheetStatus(`Erro ao adicionar: ${msg}`);
     }
   };
