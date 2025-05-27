@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const fields = req.body as Fields;
   const sheetName = req.cookies.sheetName || 'Agent Bill - Controle de Contas';
   let sheetId = req.cookies.sheetId;
+  let createdNewSheet = false;
 
   try {
     if (sheetId) {
@@ -31,9 +32,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      if (!checkRes.ok) {
+      if (checkRes.status === 404 || checkRes.status === 410) {
+        console.warn(
+          `Spreadsheet ${sheetId} not found (status ${checkRes.status}). Creating a new one.`,
+        );
         sheetId = undefined;
-      } else {
+      } else if (checkRes.ok) {
         const metaData = await checkRes.json();
         const contasExists = metaData.sheets?.some(
           (s: any) => s.properties?.title === 'Contas',
@@ -91,6 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (!sheetId) {
       // create spreadsheet
+      createdNewSheet = true;
       const createRes = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
         method: 'POST',
         headers: {
@@ -106,6 +111,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       const createData = await createRes.json();
       sheetId = createData.spreadsheetId;
+      console.info(`Created new spreadsheet with id ${sheetId}`);
       // store sheetId cookie
       res.setHeader(
         'Set-Cookie',
@@ -211,7 +217,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const appendData = await appendRes.json();
-    res.status(200).json({ updatedRange: appendData.updates?.updatedRange, sheetId });
+    res
+      .status(200)
+      .json({
+        updatedRange: appendData.updates?.updatedRange,
+        sheetId,
+        createdNewSheet,
+      });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: message });
