@@ -28,3 +28,17 @@
   color: #555;
   font-size: 0.9rem;
 }
+
+.result {
+  margin-top: 1rem;
+}
+
+.resultTable {
+  border-collapse: collapse;
+}
+
+.resultTable th,
+.resultTable td {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+}
