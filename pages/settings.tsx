@@ -16,6 +16,7 @@ const Settings: NextPage = () => {
   const [userIcon, setUserIcon] = useState('');
   const [userName, setUserName] = useState('');
   const [sheetName, setSheetName] = useState('Agent Bill - Controle de Contas');
+  const [sheetId, setSheetId] = useState('');
 
   useEffect(() => {
     fetch('/api/config')
@@ -24,6 +25,7 @@ const Settings: NextPage = () => {
         setConnected(data.hasGoogleToken);
         setKeyStored(data.hasOpenAIKey);
         if (data.sheetName) setSheetName(data.sheetName);
+        if (data.sheetId) setSheetId(data.sheetId);
       });
   }, []);
 
@@ -123,15 +125,28 @@ const Settings: NextPage = () => {
     });
   };
 
-  const saveSheet = () => {
-    fetch('/api/config', {
+  const saveSheet = async () => {
+    await fetch('/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sheetName }),
-    }).then(() => {
-      setMessage('Nome da planilha salvo!');
-      setIsError(false);
     });
+
+    if (sheetId) {
+      const res = await fetch('/api/renameSheet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sheetId, sheetName }),
+      });
+      if (!res.ok) {
+        setMessage('Falha ao renomear planilha.');
+        setIsError(true);
+        return;
+      }
+    }
+
+    setMessage('Nome da planilha salvo!');
+    setIsError(false);
   };
 
   return (
@@ -184,7 +199,7 @@ const Settings: NextPage = () => {
           )}
         </div>
         <div className={`${styles.section} ${styles.googleSection}`}>
-          <h3 className={styles.sectionTitle}>Configurações do Google</h3>
+          <h3 className={styles.sectionTitle}>Conexão Conta Google</h3>
           <div className={styles.status}>
             {connected ? (
               <>
@@ -209,7 +224,7 @@ const Settings: NextPage = () => {
               Conectar Google
             </button>
           )}
-          <label htmlFor="sheetName">Nome da planilha:</label>
+          <label htmlFor="sheetName">Nome da Planilha Google Sheet:</label>
           <input
             id="sheetName"
             type="text"
