@@ -30,6 +30,13 @@ export default async function handler(
     return;
   }
 
+  const MAX_BYTES = 1024 * 1024;
+  const byteLength = Buffer.byteLength(data, 'base64');
+  if (byteLength > MAX_BYTES) {
+    res.status(400).json({ error: 'Arquivo excede o limite de 1MB.' });
+    return;
+  }
+
   try {
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

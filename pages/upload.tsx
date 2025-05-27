@@ -2,6 +2,11 @@ import type { NextPage } from 'next';
 import { useRef, useState } from 'react';
 import Layout from '../components/Layout';
 import styles from '../styles/Upload.module.css';
+import {
+  compressImage,
+  fileToDataURL,
+  MAX_IMAGE_BYTES,
+} from '../utils/image';
 
 const Upload: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -23,7 +28,7 @@ const Upload: NextPage = () => {
     inputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const validTypes = ['image/png', 'image/jpeg', 'application/pdf'];
@@ -35,37 +40,50 @@ const Upload: NextPage = () => {
     setError('');
     setStatus('Processando arquivo...');
     setResult(null);
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      const base64 = reader.result?.toString().split(',')[1];
-      if (!base64) return;
-      try {
-        const res = await fetch('/api/process', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: base64, type: file.type }),
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setResult(data);
-          setStatus('Processamento concluído!');
+
+    try {
+      let dataUrl: string;
+      let type = file.type;
+      if (file.size > MAX_IMAGE_BYTES) {
+        if (file.type === 'image/png' || file.type === 'image/jpeg') {
+          dataUrl = await compressImage(file, MAX_IMAGE_BYTES);
+          type = 'image/jpeg';
         } else {
-          const text = await res.text();
-          let message = text;
-          try {
-            const parsed = JSON.parse(text);
-            message = parsed.error || text;
-          } catch {
-            // leave message as text
-          }
-          setStatus(`Falha ao processar o arquivo: ${message}`);
+          setStatus('');
+          setError('Arquivos acima de 1MB não são suportados.');
+          return;
         }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        setStatus(`Falha ao processar o arquivo: ${msg}`);
+      } else {
+        dataUrl = await fileToDataURL(file);
       }
-    };
-    reader.readAsDataURL(file);
+
+      const base64 = dataUrl.split(',')[1];
+      if (!base64) throw new Error('Falha ao ler o arquivo');
+
+      const res = await fetch('/api/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ data: base64, type }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setResult(data);
+        setStatus('Processamento concluído!');
+      } else {
+        const text = await res.text();
+        let message = text;
+        try {
+          const parsed = JSON.parse(text);
+          message = parsed.error || text;
+        } catch {
+          // leave message as text
+        }
+        setStatus(`Falha ao processar o arquivo: ${message}`);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setStatus(`Falha ao processar o arquivo: ${msg}`);
+    }
   };
 
   return (
