@@ -7,6 +7,17 @@ const Upload: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
+  const [result, setResult] = useState<{
+    fields: {
+      nomeConta: string;
+      cedente: string;
+      tipo: string;
+      valor: string;
+      vencimento: string;
+      codigoBarras: string;
+    };
+    confidence: number;
+  } | null>(null);
 
   const handleButtonClick = () => {
     inputRef.current?.click();
@@ -23,6 +34,7 @@ const Upload: NextPage = () => {
     }
     setError('');
     setStatus('Processando arquivo...');
+    setResult(null);
     const reader = new FileReader();
     reader.onloadend = async () => {
       const base64 = reader.result?.toString().split(',')[1];
@@ -31,9 +43,11 @@ const Upload: NextPage = () => {
         const res = await fetch('/api/process', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ data: base64, type: file.type, name: file.name }),
+          body: JSON.stringify({ data: base64, type: file.type }),
         });
         if (res.ok) {
+          const data = await res.json();
+          setResult(data);
           setStatus('Processamento concluído!');
         } else {
           setStatus('Falha ao processar o arquivo.');
@@ -66,6 +80,43 @@ const Upload: NextPage = () => {
         {error && <div className={styles.error}>{error}</div>}
         {status && <div className={styles.status}>{status}</div>}
       </div>
+      {result && (
+        <div className={styles.result}>
+          <h3>Dados Extraídos</h3>
+          <table className={styles.resultTable}>
+            <tbody>
+              <tr>
+                <th>Nome da conta</th>
+                <td>{result.fields.nomeConta || '-'}</td>
+              </tr>
+              <tr>
+                <th>Cedente</th>
+                <td>{result.fields.cedente || '-'}</td>
+              </tr>
+              <tr>
+                <th>Tipo</th>
+                <td>{result.fields.tipo || '-'}</td>
+              </tr>
+              <tr>
+                <th>Valor</th>
+                <td>{result.fields.valor || '-'}</td>
+              </tr>
+              <tr>
+                <th>Vencimento</th>
+                <td>{result.fields.vencimento || '-'}</td>
+              </tr>
+              <tr>
+                <th>Código de barras</th>
+                <td>{result.fields.codigoBarras || '-'}</td>
+              </tr>
+              <tr>
+                <th>Confiança</th>
+                <td>{(result.confidence * 100).toFixed(0)}%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )}
     </Layout>
   );
 };
