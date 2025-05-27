@@ -26,6 +26,69 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let sheetId = req.cookies.sheetId;
 
   try {
+    if (sheetId) {
+      const checkRes = await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (!checkRes.ok) {
+        sheetId = undefined;
+      } else {
+        const metaData = await checkRes.json();
+        const contasExists = metaData.sheets?.some(
+          (s: any) => s.properties?.title === 'Contas',
+        );
+        if (!contasExists) {
+          const batchRes = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                requests: [{ addSheet: { properties: { title: 'Contas' } } }],
+              }),
+            },
+          );
+          if (!batchRes.ok) {
+            const text = await batchRes.text();
+            res.status(500).json({ error: `Failed to setup sheet: ${text}` });
+            return;
+          }
+
+          const headerRes = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A1:F1?valueInputOption=RAW`,
+            {
+              method: 'PUT',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                values: [
+                  [
+                    'Empresa Recebedora',
+                    'Pagador',
+                    'Tipo',
+                    'Valor',
+                    'Vencimento',
+                    'Código de Barras',
+                  ],
+                ],
+              }),
+            },
+          );
+          if (!headerRes.ok) {
+            const text = await headerRes.text();
+            res.status(500).json({ error: `Failed to write headers: ${text}` });
+            return;
+          }
+        }
+      }
+    }
+
     if (!sheetId) {
       // create spreadsheet
       const createRes = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
