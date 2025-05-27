@@ -66,10 +66,14 @@ const Settings: NextPage = () => {
     }
   }, [router.query.status]);
 
+  // Hard-coded default Google OAuth client ID so the app works without config
+  const GOOGLE_CLIENT_ID =
+    '198927534674-0akhqu4ip9hg276ag2mliknkh7pvp4op.apps.googleusercontent.com';
+
   const connect = () => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    const clientId = GOOGLE_CLIENT_ID;
     if (!clientId) {
-      setMessage('ID de cliente do Google OAuth não configurado. Defina a variável de ambiente NEXT_PUBLIC_GOOGLE_CLIENT_ID.');
+      setMessage('ID de cliente do Google OAuth não configurado.');
       setIsError(true);
       return;
     }
