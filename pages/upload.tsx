@@ -8,6 +8,20 @@ import {
   MAX_IMAGE_BYTES,
 } from '../utils/image';
 
+function formatDate(value: string): string {
+  const parsed = new Date(value);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toISOString().slice(0, 10);
+  }
+  const match = value.match(/(\d{1,2})\D(\d{1,2})\D(\d{2,4})/);
+  if (match) {
+    const [, d, m, y] = match;
+    const year = y.length === 2 ? `20${y}` : y;
+    return `${year}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`;
+  }
+  return '';
+}
+
 const Upload: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
@@ -142,6 +156,24 @@ const Upload: NextPage = () => {
               </tr>
             </tbody>
           </table>
+          <div className={styles.actions}>
+            <button type="button" className={styles.button}>
+              Adicione `a planilha
+            </button>
+            <button type="button" className={styles.button}>
+              Adicione ao seu calendario
+            </button>
+            <div className={styles.calendarFields}>
+              <input
+                type="datetime-local"
+                defaultValue={`${formatDate(result.fields.vencimento)}T10:00`}
+                className={styles.input}
+              />
+              <label className={styles.checkbox}>
+                <input type="checkbox" /> Alarme
+              </label>
+            </div>
+          </div>
         </div>
       )}
     </Layout>
