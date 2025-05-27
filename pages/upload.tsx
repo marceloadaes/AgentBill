@@ -111,7 +111,12 @@ const Upload: NextPage = () => {
         body: JSON.stringify(result.fields),
       });
       if (res.ok) {
-        setSheetStatus('Conta adicionada à planilha!');
+        const data = await res.json();
+        let message = 'Conta adicionada à planilha!';
+        if (data.createdNewSheet) {
+          message += ' Nova planilha criada.';
+        }
+        setSheetStatus(message);
       } else {
         const text = await res.text();
         let msg = text;
