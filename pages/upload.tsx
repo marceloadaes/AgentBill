@@ -6,6 +6,7 @@ import styles from '../styles/Upload.module.css';
 const Upload: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
+  const [status, setStatus] = useState('');
 
   const handleButtonClick = () => {
     inputRef.current?.click();
@@ -21,7 +22,27 @@ const Upload: NextPage = () => {
       return;
     }
     setError('');
-    // US004 does not define further processing in this page.
+    setStatus('Processando arquivo...');
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result?.toString().split(',')[1];
+      if (!base64) return;
+      try {
+        const res = await fetch('/api/process', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: base64, type: file.type, name: file.name }),
+        });
+        if (res.ok) {
+          setStatus('Processamento concluído!');
+        } else {
+          setStatus('Falha ao processar o arquivo.');
+        }
+      } catch {
+        setStatus('Falha ao processar o arquivo.');
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -43,6 +64,7 @@ const Upload: NextPage = () => {
           Selecionar Arquivo
         </button>
         {error && <div className={styles.error}>{error}</div>}
+        {status && <div className={styles.status}>{status}</div>}
       </div>
     </Layout>
   );
