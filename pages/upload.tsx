@@ -158,7 +158,7 @@ const Upload: NextPage = () => {
           </table>
           <div className={styles.actions}>
             <button type="button" className={styles.button}>
-              Adicione `a planilha
+              Adicione à planilha
             </button>
             <button type="button" className={styles.button}>
               Adicione ao seu calendario
@@ -170,7 +170,7 @@ const Upload: NextPage = () => {
                 className={styles.input}
               />
               <label className={styles.checkbox}>
-                <input type="checkbox" /> Alarme
+                <input type="checkbox" /> Criar Alarme?
               </label>
             </div>
           </div>
