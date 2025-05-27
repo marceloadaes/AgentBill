@@ -15,6 +15,8 @@ const Settings: NextPage = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userIcon, setUserIcon] = useState('');
   const [userName, setUserName] = useState('');
+  // Store full response from /api/userinfo for debugging
+  const [userInfo, setUserInfo] = useState<Record<string, any> | null>(null);
 
   useEffect(() => {
     fetch('/api/config')
@@ -33,16 +35,19 @@ const Settings: NextPage = () => {
           setUserEmail(data.email);
           setUserIcon(data.picture);
           setUserName(data.name);
+          setUserInfo(data);
         })
         .catch(() => {
           setUserEmail('');
           setUserIcon('');
           setUserName('');
+          setUserInfo(null);
         });
     } else {
       setUserEmail('');
       setUserIcon('');
       setUserName('');
+      setUserInfo(null);
     }
   }, [connected]);
 
@@ -179,6 +184,12 @@ const Settings: NextPage = () => {
           )}
         </div>
       </div>
+      {userInfo && (
+        <div className={styles.debug}>
+          <h3 className={styles.sectionTitle}>Resposta do /api/userinfo</h3>
+          <pre>{JSON.stringify(userInfo, null, 2)}</pre>
+        </div>
+      )}
     </Layout>
   );
 };
