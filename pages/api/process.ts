@@ -12,8 +12,6 @@ interface Fields {
 interface ProcessResponse {
   fields: Fields;
   confidence: number;
-  prompt: any;
-  raw: any;
 }
 
 export default async function handler(
@@ -102,8 +100,6 @@ export default async function handler(
           codigoBarras: '',
         },
         confidence: 0,
-        prompt: messages,
-        raw: result,
       });
       return;
     }
@@ -124,7 +120,7 @@ export default async function handler(
         ? parsed.confidence
         : filled / keys.length;
 
-    res.status(200).json({ fields, confidence, prompt: messages, raw: result });
+    res.status(200).json({ fields, confidence });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: message });
