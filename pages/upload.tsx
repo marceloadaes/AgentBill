@@ -22,6 +22,8 @@ const Upload: NextPage = () => {
       codigoBarras: string;
     };
     confidence: number;
+    prompt: any;
+    raw: any;
   } | null>(null);
 
   const handleButtonClick = () => {
@@ -142,6 +144,12 @@ const Upload: NextPage = () => {
               </tr>
             </tbody>
           </table>
+          <div className={styles.debug}>
+            <h4>Prompt Enviado</h4>
+            <pre>{JSON.stringify(result.prompt, null, 2)}</pre>
+            <h4>Resposta Bruta da API</h4>
+            <pre>{JSON.stringify(result.raw, null, 2)}</pre>
+          </div>
         </div>
       )}
     </Layout>
