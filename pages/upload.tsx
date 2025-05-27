@@ -27,6 +27,10 @@ const Upload: NextPage = () => {
   return (
     <Layout>
       <h2>Enviar Conta</h2>
+      <p className={styles.instructions}>
+        Envie uma imagem legível de uma conta (por exemplo, água, luz,
+        telefone ou boleto) nos formatos JPG, PNG ou PDF.
+      </p>
       <div className={styles.form}>
         <input
           type="file"
