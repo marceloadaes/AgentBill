@@ -10,12 +10,22 @@ export default function Layout({ children }: Props) {
   const [configured, setConfigured] = useState(true);
 
   useEffect(() => {
-    fetch('/api/config')
-      .then((res) => res.json())
-      .then((data) =>
-        setConfigured(data.hasGoogleToken && data.hasOpenAIKey)
-      )
-      .catch(() => setConfigured(false));
+    const fetchConfig = () => {
+      fetch('/api/config')
+        .then((res) => res.json())
+        .then((data) =>
+          setConfigured(data.hasGoogleToken && data.hasOpenAIKey)
+        )
+        .catch(() => setConfigured(false));
+    };
+
+    fetchConfig();
+
+    const handler = () => fetchConfig();
+    window.addEventListener('config-changed', handler);
+    return () => {
+      window.removeEventListener('config-changed', handler);
+    };
   }, []);
 
   const renderLink = (

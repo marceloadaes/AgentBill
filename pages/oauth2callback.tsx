@@ -16,7 +16,10 @@ export default function OAuthCallback() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ googleToken: token }),
         })
-          .then(() => router.replace('/settings?status=success'))
+          .then(() => {
+            window.dispatchEvent(new Event('config-changed'));
+            router.replace('/settings?status=success');
+          })
           .catch(() => router.replace('/settings?status=error'));
       } else {
         router.replace('/settings?status=error');

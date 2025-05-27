@@ -94,6 +94,7 @@ const Settings: NextPage = () => {
       setConnected(false);
       setMessage('Conta do Google desconectada.');
       setIsError(false);
+      window.dispatchEvent(new Event('config-changed'));
     });
   };
 
@@ -114,6 +115,7 @@ const Settings: NextPage = () => {
       setOpenAIKey('');
       setMessage('Chave da API do OpenAI salva!');
       setIsError(false);
+      window.dispatchEvent(new Event('config-changed'));
     });
   };
 
@@ -122,6 +124,7 @@ const Settings: NextPage = () => {
       setKeyStored(false);
       setMessage('Chave da API do OpenAI removida.');
       setIsError(false);
+      window.dispatchEvent(new Event('config-changed'));
     });
   };
 
