@@ -43,3 +43,15 @@
   padding: 1rem;
   text-align: center;
 }
+
+/* Container for logo and title inside the header */
+.branding {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo {
+  height: 40px;
+  width: auto;
+}
