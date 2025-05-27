@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { LOGO_DATA_URL } from '../../utils/logoData';
 
 interface Fields {
   empresaRecebedora: string;
@@ -63,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
 
           const headerRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A1:F1?valueInputOption=RAW`,
+            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A7:F7?valueInputOption=RAW`,
             {
               method: 'PUT',
               headers: {
@@ -160,7 +161,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // write header row on "Contas"
       const headerRes = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A1:F1?valueInputOption=RAW`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A7:F7?valueInputOption=RAW`,
         {
           method: 'PUT',
           headers: {
@@ -186,11 +187,104 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(500).json({ error: `Failed to write headers: ${text}` });
         return;
       }
+
+      // fetch sheet id for "Contas" to apply formatting and logo
+      const metaRes2 = await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (metaRes2.ok) {
+        const data = await metaRes2.json();
+        const contasSheet = data.sheets?.find(
+          (s: any) => s.properties?.title === 'Contas',
+        );
+        const contasSheetId = contasSheet?.properties?.sheetId;
+        if (contasSheetId) {
+          await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                requests: [
+                  {
+                    mergeCells: {
+                      range: {
+                        sheetId: contasSheetId,
+                        startRowIndex: 0,
+                        endRowIndex: 6,
+                        startColumnIndex: 0,
+                        endColumnIndex: 6,
+                      },
+                      mergeType: 'MERGE_ALL',
+                    },
+                  },
+                  {
+                    updateCells: {
+                      rows: [
+                        {
+                          values: [
+                            {
+                              userEnteredValue: {
+                                formulaValue: `=IMAGE("${LOGO_DATA_URL}")`,
+                              },
+                              userEnteredFormat: {
+                                horizontalAlignment: 'CENTER',
+                              },
+                            },
+                          ],
+                        },
+                      ],
+                      start: {
+                        sheetId: contasSheetId,
+                        rowIndex: 0,
+                        columnIndex: 0,
+                      },
+                      fields:
+                        'userEnteredValue,userEnteredFormat.horizontalAlignment',
+                    },
+                  },
+                  {
+                    repeatCell: {
+                      range: {
+                        sheetId: contasSheetId,
+                        startRowIndex: 6,
+                        endRowIndex: 7,
+                        startColumnIndex: 0,
+                        endColumnIndex: 6,
+                      },
+                      cell: {
+                        userEnteredFormat: {
+                          backgroundColor: {
+                            red: 44 / 255,
+                            green: 62 / 255,
+                            blue: 80 / 255,
+                          },
+                          textFormat: {
+                            foregroundColor: { red: 1, green: 1, blue: 1 },
+                            bold: true,
+                          },
+                        },
+                      },
+                      fields: 'userEnteredFormat(backgroundColor,textFormat)',
+                    },
+                  },
+                ],
+              }),
+            },
+          );
+        }
+      }
     }
 
     // append new row
     const appendRes = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A1:F1:append?valueInputOption=USER_ENTERED`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A7:F7:append?valueInputOption=USER_ENTERED`,
       {
         method: 'POST',
         headers: {
