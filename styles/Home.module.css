@@ -28,3 +28,14 @@
   margin: 0;
   color: #666;
 }
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.message {
+  margin-top: 1rem;
+  color: #c0392b;
+  font-weight: bold;
+}

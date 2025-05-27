@@ -24,6 +24,12 @@
   transition: color 0.2s ease;
 }
 
+.disabled {
+  color: #888;
+  pointer-events: none;
+  cursor: default;
+}
+
 .nav a:hover {
   color: #ffffff;
   text-decoration: underline;
