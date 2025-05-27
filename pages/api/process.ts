@@ -1,8 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 interface Fields {
-  nomeConta: string;
-  cedente: string;
+  empresaRecebedora: string;
+  pagador: string;
   tipo: string;
   valor: string;
   vencimento: string;
@@ -42,7 +42,7 @@ export default async function handler(
       {
         role: 'system',
         content:
-          'Responda somente com um objeto JSON contendo os campos: nomeConta, cedente, tipo, valor, vencimento, codigoBarras e confidence (0-1).',
+          'Responda somente com um objeto JSON contendo:\n- EmpresaRecebedora: entidade que receber\u00e1 o pagamento.\n- Pagador: pessoa ou empresa respons\u00e1vel pelo pagamento.\n- Tipo: categoria do servi\u00e7o.\n- Valor: total a pagar.\n- Vencimento: data limite de pagamento.\n- Codigo de Barras: sequ\u00eancia num\u00e9rica do c\u00f3digo de barras.\n- Confianca: valor entre 0 e 100 representando sua certeza geral.',
       },
       {
         role: 'user',
@@ -92,8 +92,8 @@ export default async function handler(
     } catch {
       res.status(200).json({
         fields: {
-          nomeConta: '',
-          cedente: '',
+          empresaRecebedora: '',
+          pagador: '',
           tipo: '',
           valor: '',
           vencimento: '',
@@ -105,20 +105,22 @@ export default async function handler(
     }
 
     const fields: Fields = {
-      nomeConta: parsed.nomeConta || '',
-      cedente: parsed.cedente || '',
-      tipo: parsed.tipo || '',
-      valor: parsed.valor || '',
-      vencimento: parsed.vencimento || '',
-      codigoBarras: parsed.codigoBarras || '',
+      empresaRecebedora: parsed['EmpresaRecebedora'] || parsed.empresaRecebedora || '',
+      pagador: parsed['Pagador'] || parsed.pagador || '',
+      tipo: parsed['Tipo'] || parsed.tipo || '',
+      valor: parsed['Valor'] || parsed.valor || '',
+      vencimento: parsed['Vencimento'] || parsed.vencimento || '',
+      codigoBarras: parsed['Codigo de Barras'] || parsed.codigoBarras || parsed.codigoDeBarras || '',
     };
 
     const keys = Object.keys(fields) as Array<keyof Fields>;
     const filled = keys.filter((k) => fields[k]).length;
     const confidence =
-      typeof parsed.confidence === 'number'
-        ? parsed.confidence
-        : filled / keys.length;
+      typeof parsed['Confianca'] === 'number'
+        ? parsed['Confianca']
+        : typeof parsed.confidence === 'number'
+          ? parsed.confidence
+          : (filled / keys.length) * 100;
 
     res.status(200).json({ fields, confidence });
   } catch (err) {

@@ -28,8 +28,8 @@ const Upload: NextPage = () => {
   const [status, setStatus] = useState('');
   const [result, setResult] = useState<{
     fields: {
-      nomeConta: string;
-      cedente: string;
+      empresaRecebedora: string;
+      pagador: string;
       tipo: string;
       valor: string;
       vencimento: string;
@@ -127,12 +127,12 @@ const Upload: NextPage = () => {
           <table className={styles.resultTable}>
             <tbody>
               <tr>
-                <th>Nome da conta</th>
-                <td>{result.fields.nomeConta || '-'}</td>
+                <th>Empresa Recebedora</th>
+                <td>{result.fields.empresaRecebedora || '-'}</td>
               </tr>
               <tr>
-                <th>Cedente</th>
-                <td>{result.fields.cedente || '-'}</td>
+                <th>Pagador</th>
+                <td>{result.fields.pagador || '-'}</td>
               </tr>
               <tr>
                 <th>Tipo</th>
@@ -152,7 +152,7 @@ const Upload: NextPage = () => {
               </tr>
               <tr>
                 <th>Confiança</th>
-                <td>{(result.confidence * 100).toFixed(0)}%</td>
+                <td>{result.confidence.toFixed(0)}%</td>
               </tr>
             </tbody>
           </table>
