@@ -121,7 +121,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // append new row
     const appendRes = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A:F:append?valueInputOption=USER_ENTERED`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A1:F1:append?valueInputOption=USER_ENTERED`,
       {
         method: 'POST',
         headers: {
