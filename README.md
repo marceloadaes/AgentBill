@@ -20,10 +20,11 @@ cp .env.example .env.local
 
 Then set the `NEXT_PUBLIC_GOOGLE_CLIENT_ID` environment variable with the client
 ID of your Google OAuth application. The redirect URL should point to
-`/oauth2callback` on your deployed site. Once configured, you can connect or
-disconnect your Google account from the **Settings** page. If the variable is
-missing, the **Connect** button will display an error and no OAuth request will
-be made.
+`/oauth2callback` on your deployed site. A default client ID is bundled with the
+code so the application works out of the box, but you can override it by setting
+your own value. Once configured, you can connect or disconnect your Google
+account from the **Settings** page. If no value is provided, the default ID will
+be used.
 
 ## Secure Configuration Storage
 
