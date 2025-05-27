@@ -136,22 +136,34 @@ const Settings: NextPage = () => {
       <div className={styles.sections}>
         <div className={`${styles.section} ${styles.openAISection}`}>
           <h3 className={styles.sectionTitle}>Configurações do OpenAI</h3>
-          <label htmlFor="openaiKey">Chave da API do OpenAI:</label>
-          <input
-            id="openaiKey"
-            type="text"
-            value={openAIKey}
-            onChange={(e) => setOpenAIKey(e.target.value)}
-            className={styles.input}
-          />
-          <button onClick={saveKey} className={styles.button}>
-            Salvar chave
-          </button>
-          {keyStored && (
+          {keyStored ? (
             <>
               <span className={styles.note}>Chave armazenada com segurança</span>
               <button onClick={deleteKey} className={styles.button}>
                 Remover chave
+              </button>
+            </>
+          ) : (
+            <>
+              <p className={styles.instructions}>
+                Para obter sua chave:
+                <ol>
+                  <li>Acesse platform.openai.com e faça login</li>
+                  <li>Abra a página "API Keys"</li>
+                  <li>Crie uma nova chave secreta</li>
+                  <li>Copie o valor e cole abaixo</li>
+                </ol>
+              </p>
+              <label htmlFor="openaiKey">Chave da API do OpenAI:</label>
+              <input
+                id="openaiKey"
+                type="text"
+                value={openAIKey}
+                onChange={(e) => setOpenAIKey(e.target.value)}
+                className={styles.input}
+              />
+              <button onClick={saveKey} className={styles.button}>
+                Salvar chave
               </button>
             </>
           )}
