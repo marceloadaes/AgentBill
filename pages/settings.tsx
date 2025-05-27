@@ -153,7 +153,7 @@ const Settings: NextPage = () => {
     <Layout>
       <h2>Configurações</h2>
       {keyStored && (
-        <div className={`${styles.message} ${styles.success}`}>Chave armazenada com segurança!</div>
+        <div className={`${styles.message} ${styles.success}`}>Chave configurada e armazenada!</div>
       )}
       {message && (
         <div className={`${styles.message} ${isError ? styles.error : styles.success}`}>{message}
