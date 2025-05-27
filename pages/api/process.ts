@@ -38,7 +38,7 @@ export default async function handler(
         Authorization: `Bearer ${key}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4-1106-vision-preview',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
