@@ -6,10 +6,6 @@ import styles from '../styles/Home.module.css';
 const Home: NextPage = () => {
   return (
     <Layout>
-      <div className={styles.logoContainer}>
-        {/* Display project logo */}
-        <img src="/AgentBillLogo.png" alt="Agent Bill logo" className={styles.logo} />
-      </div>
       <div className={styles.grid}>
         <Link href="/upload" className={styles.card}>
           <h2>Enviar Conta &rarr;</h2>
