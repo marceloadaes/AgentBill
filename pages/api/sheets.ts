@@ -44,11 +44,54 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const createData = await createRes.json();
       sheetId = createData.spreadsheetId;
       // store sheetId cookie
-      res.setHeader('Set-Cookie', `sheetId=${sheetId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`);
+      res.setHeader(
+        'Set-Cookie',
+        `sheetId=${sheetId}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`,
+      );
 
-      // write header row
+      // fetch default sheet metadata
+      const metaRes = await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (!metaRes.ok) {
+        const text = await metaRes.text();
+        res.status(500).json({ error: `Failed to get sheet metadata: ${text}` });
+        return;
+      }
+      const metaData = await metaRes.json();
+      const defaultSheetId = metaData.sheets?.[0]?.properties?.sheetId;
+
+      // add "Contas" sheet and remove default sheet
+      const batchRes = await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            requests: [
+              { addSheet: { properties: { title: 'Contas' } } },
+              defaultSheetId
+                ? { deleteSheet: { sheetId: defaultSheetId } }
+                : undefined,
+            ].filter(Boolean),
+          }),
+        },
+      );
+      if (!batchRes.ok) {
+        const text = await batchRes.text();
+        res.status(500).json({ error: `Failed to setup sheets: ${text}` });
+        return;
+      }
+
+      // write header row on "Contas"
       const headerRes = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A1:F1?valueInputOption=RAW`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A1:F1?valueInputOption=RAW`,
         {
           method: 'PUT',
           headers: {
@@ -78,7 +121,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // append new row
     const appendRes = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A:F:append?valueInputOption=USER_ENTERED`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A:F:append?valueInputOption=USER_ENTERED`,
       {
         method: 'POST',
         headers: {
