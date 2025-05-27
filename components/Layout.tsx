@@ -15,7 +15,6 @@ export default function Layout({ children }: Props) {
           <Link href="/">Início</Link>
           <Link href="/upload">Enviar Conta</Link>
           <Link href="/spreadsheet">Planilha</Link>
-          <Link href="/history">Histórico</Link>
           <Link href="/settings">Configurações</Link>
         </nav>
       </header>
