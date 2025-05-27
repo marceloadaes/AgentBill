@@ -54,6 +54,12 @@
   border-radius: 4px;
 }
 
+.sheetSection {
+  background-color: #fff3e0;
+  padding: 1rem;
+  border-radius: 4px;
+}
+
 .sectionTitle {
   margin-top: 0;
   margin-bottom: 0.5rem;

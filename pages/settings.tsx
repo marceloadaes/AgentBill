@@ -165,6 +165,47 @@ const Settings: NextPage = () => {
         </div>
       )}
       <div className={styles.sections}>
+        <div className={`${styles.section} ${styles.googleSection}`}>
+          <h3 className={styles.sectionTitle}>Conexão Conta Google</h3>
+          <div className={styles.status}>
+            {connected ? (
+              <>
+                {userIcon && (
+                  <img src={userIcon} alt="account" className={styles.profileIcon} />
+                )}
+                <span>{userName} ({userEmail})</span>
+              </>
+            ) : (
+              <>
+                <span className={styles.notConnected}>X</span>
+                <span className={styles.notConnected}>Não conectado</span>
+              </>
+            )}
+          </div>
+          {connected ? (
+            <button onClick={disconnect} className={styles.button}>
+              Desconectar Google
+            </button>
+          ) : (
+            <button onClick={connect} className={styles.button}>
+              Conectar Google
+            </button>
+          )}
+        </div>
+        <div className={`${styles.section} ${styles.sheetSection}`}>
+          <h3 className={styles.sectionTitle}>Nome da Planilha Google Sheet</h3>
+          <label htmlFor="sheetName">Nome da Planilha Google Sheet:</label>
+          <input
+            id="sheetName"
+            type="text"
+            value={sheetName}
+            onChange={(e) => setSheetName(e.target.value)}
+            className={styles.input}
+          />
+          <button onClick={saveSheet} className={styles.button}>
+            Salvar nome
+          </button>
+        </div>
         <div className={`${styles.section} ${styles.openAISection}`}>
           <h3 className={styles.sectionTitle}>Configurações do OpenAI</h3>
           {keyStored ? (
@@ -197,44 +238,6 @@ const Settings: NextPage = () => {
               </button>
             </>
           )}
-        </div>
-        <div className={`${styles.section} ${styles.googleSection}`}>
-          <h3 className={styles.sectionTitle}>Conexão Conta Google</h3>
-          <div className={styles.status}>
-            {connected ? (
-              <>
-                {userIcon && (
-                  <img src={userIcon} alt="account" className={styles.profileIcon} />
-                )}
-                <span>{userName} ({userEmail})</span>
-              </>
-            ) : (
-              <>
-                <span className={styles.notConnected}>X</span>
-                <span className={styles.notConnected}>Não conectado</span>
-              </>
-            )}
-          </div>
-          {connected ? (
-            <button onClick={disconnect} className={styles.button}>
-              Desconectar Google
-            </button>
-          ) : (
-            <button onClick={connect} className={styles.button}>
-              Conectar Google
-            </button>
-          )}
-          <label htmlFor="sheetName">Nome da Planilha Google Sheet:</label>
-          <input
-            id="sheetName"
-            type="text"
-            value={sheetName}
-            onChange={(e) => setSheetName(e.target.value)}
-            className={styles.input}
-          />
-          <button onClick={saveSheet} className={styles.button}>
-            Salvar nome
-          </button>
         </div>
       </div>
     </Layout>
