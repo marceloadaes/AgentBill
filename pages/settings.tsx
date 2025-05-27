@@ -66,6 +66,7 @@ const Settings: NextPage = () => {
     }
   }, [router.query.status]);
 
+
   // Hard-coded default Google OAuth client ID so the app works without config
   const GOOGLE_CLIENT_ID =
     '198927534674-0akhqu4ip9hg276ag2mliknkh7pvp4op.apps.googleusercontent.com';
