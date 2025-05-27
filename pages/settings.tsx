@@ -138,7 +138,9 @@ const Settings: NextPage = () => {
           <h3 className={styles.sectionTitle}>Configurações do OpenAI</h3>
           {keyStored ? (
             <>
-              <span className={styles.note}>Chave armazenada com segurança</span>
+              <div className={`${styles.message} ${styles.success}`}>
+                Chave armazenada com segurança
+              </div>
               <button onClick={deleteKey} className={styles.button}>
                 Remover chave
               </button>
