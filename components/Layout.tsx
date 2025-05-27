@@ -13,7 +13,7 @@ export default function Layout({ children }: Props) {
         <nav className={styles.nav}>
           <Link href="/">Início</Link>
           <Link href="/upload">Enviar Conta</Link>
-          <Link href="/spreadsheet">Planilha</Link>
+          <Link href="/links">Links externos</Link>
           <Link href="/settings">Configurações</Link>
         </nav>
       </header>

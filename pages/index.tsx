@@ -11,9 +11,9 @@ const Home: NextPage = () => {
           <h2>Enviar Conta &rarr;</h2>
           <p>Envie uma imagem ou PDF para processamento.</p>
         </Link>
-        <Link href="/spreadsheet" className={styles.card}>
-          <h2>Planilha &rarr;</h2>
-          <p>Veja todas as suas contas no Google Sheets.</p>
+        <Link href="/links" className={styles.card}>
+          <h2>Links externos &rarr;</h2>
+          <p>Acesse a planilha e seu calendário.</p>
         </Link>
         <Link href="/settings" className={styles.card}>
           <h2>Configurações &rarr;</h2>
