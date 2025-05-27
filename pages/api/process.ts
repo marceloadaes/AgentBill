@@ -66,6 +66,7 @@ export default async function handler(
       res
         .status(response.status)
         .json({ error: `OpenAI API error: ${text}` });
+
       return;
     }
 
