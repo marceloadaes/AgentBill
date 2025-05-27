@@ -1,5 +1,5 @@
 import type { NextPage } from 'next';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import Layout from '../components/Layout';
 import styles from '../styles/Upload.module.css';
 import {
@@ -27,6 +27,9 @@ const Upload: NextPage = () => {
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
   const [sheetStatus, setSheetStatus] = useState('');
+  const [calendarStatus, setCalendarStatus] = useState('');
+  const [eventDateTime, setEventDateTime] = useState('');
+  const [alarm, setAlarm] = useState(false);
   const [result, setResult] = useState<{
     fields: {
       empresaRecebedora: string;
@@ -38,6 +41,14 @@ const Upload: NextPage = () => {
     };
     confidence: number;
   } | null>(null);
+
+  useEffect(() => {
+    if (result) {
+      setEventDateTime(`${formatDate(result.fields.vencimento)}T10:00`);
+      setAlarm(false);
+      setCalendarStatus('');
+    }
+  }, [result]);
 
   const handleButtonClick = () => {
     inputRef.current?.click();
@@ -133,6 +144,41 @@ const Upload: NextPage = () => {
     }
   };
 
+  const sendToCalendar = async () => {
+    if (!result) return;
+    if (!eventDateTime) {
+      setCalendarStatus('Data inválida.');
+      return;
+    }
+    setCalendarStatus('Enviando para o calendário...');
+    try {
+      const res = await fetch('/api/calendar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields: result.fields,
+          dateTime: eventDateTime,
+          alarm,
+        }),
+      });
+      if (res.ok) {
+        setCalendarStatus('Evento criado no calendário!');
+      } else {
+        const text = await res.text();
+        let msg = text;
+        try {
+          msg = JSON.parse(text).error || text;
+        } catch {
+          // ignore
+        }
+        setCalendarStatus(`Erro ao criar evento: ${msg}`);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setCalendarStatus(`Erro ao criar evento: ${msg}`);
+    }
+  };
+
   return (
     <Layout>
       <h2>Enviar Conta</h2>
@@ -194,17 +240,30 @@ const Upload: NextPage = () => {
               Adicione à planilha
             </button>
             {sheetStatus && <div className={styles.status}>{sheetStatus}</div>}
-            <button type="button" className={styles.button}>
+            <button
+              type="button"
+              className={styles.button}
+              onClick={sendToCalendar}
+            >
               Adicione ao seu calendario
             </button>
+            {calendarStatus && (
+              <div className={styles.status}>{calendarStatus}</div>
+            )}
             <div className={styles.calendarFields}>
               <input
                 type="datetime-local"
-                defaultValue={`${formatDate(result.fields.vencimento)}T10:00`}
+                value={eventDateTime}
+                onChange={(e) => setEventDateTime(e.target.value)}
                 className={styles.input}
               />
               <label className={styles.checkbox}>
-                <input type="checkbox" /> Criar Alarme?
+                <input
+                  type="checkbox"
+                  checked={alarm}
+                  onChange={(e) => setAlarm(e.target.checked)}
+                />{' '}
+                Criar Alarme?
               </label>
             </div>
           </div>
