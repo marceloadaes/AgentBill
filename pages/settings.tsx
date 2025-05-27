@@ -124,6 +124,9 @@ const Settings: NextPage = () => {
   return (
     <Layout>
       <h2>Configurações</h2>
+      {keyStored && (
+        <div className={`${styles.message} ${styles.success}`}>Chave armazenada com segurança!</div>
+      )}
       {message && (
         <div className={`${styles.message} ${isError ? styles.error : styles.success}`}>{message}
           {showRetry && (
@@ -138,9 +141,6 @@ const Settings: NextPage = () => {
           <h3 className={styles.sectionTitle}>Configurações do OpenAI</h3>
           {keyStored ? (
             <>
-              <div className={`${styles.message} ${styles.success}`}>
-                Chave armazenada com segurança
-              </div>
               <button onClick={deleteKey} className={styles.button}>
                 Remover chave
               </button>
