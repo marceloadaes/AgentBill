@@ -185,7 +185,10 @@ const Settings: NextPage = () => {
         </div>
       </div>
       {userInfo && (
-        <pre>{JSON.stringify(userInfo, null, 2)}</pre>
+        <div className={styles.debug}>
+          <h3 className={styles.sectionTitle}>Resposta do /api/userinfo</h3>
+          <pre>{JSON.stringify(userInfo, null, 2)}</pre>
+        </div>
       )}
     </Layout>
   );
