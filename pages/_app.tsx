@@ -7,6 +7,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <title>Agent Bill</title>
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
       </Head>
       <Component {...pageProps} />
     </>
