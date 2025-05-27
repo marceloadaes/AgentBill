@@ -82,8 +82,12 @@ export default async function handler(
     }
 
     const result = await response.json();
-    const content =
+    let content =
       result.choices?.[0]?.message?.content?.trim() || '{}';
+    const match = content.match(/```(?:json)?\n([\s\S]*?)\n```/i);
+    if (match) {
+      content = match[1];
+    }
     let parsed: any;
     try {
       parsed = JSON.parse(content);
