@@ -8,6 +8,7 @@ For more details about how the project integrates with Google services and OpenA
 ## Documentation
 
 High level user stories and requirements are stored in the [docs/user_stories.md](docs/user_stories.md) file. Detailed descriptions can be found in [docs/detailed_user_stories.md](docs/detailed_user_stories.md).
+Formatting guidelines are available in [docs/spreadsheet_formatting.md](docs/spreadsheet_formatting.md).
 
 ## Google OAuth Setup
 
