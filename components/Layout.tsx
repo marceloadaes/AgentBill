@@ -10,7 +10,10 @@ export default function Layout({ children }: Props) {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <h1 className={styles.title}>Agent Bill</h1>
+        <div className={styles.branding}>
+          <img src="/AgentBillLogo.png" alt="Agent Bill logo" className={styles.logo} />
+          <h1 className={styles.title}>Agent Bill</h1>
+        </div>
         <nav className={styles.nav}>
           <Link href="/">Início</Link>
           <Link href="/upload">Enviar Conta</Link>
