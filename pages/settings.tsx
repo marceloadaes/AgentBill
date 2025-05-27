@@ -15,6 +15,7 @@ const Settings: NextPage = () => {
   const [userEmail, setUserEmail] = useState('');
   const [userIcon, setUserIcon] = useState('');
   const [userName, setUserName] = useState('');
+  const [sheetName, setSheetName] = useState('Agent Bill - Controle de Contas');
 
   useEffect(() => {
     fetch('/api/config')
@@ -22,6 +23,7 @@ const Settings: NextPage = () => {
       .then((data) => {
         setConnected(data.hasGoogleToken);
         setKeyStored(data.hasOpenAIKey);
+        if (data.sheetName) setSheetName(data.sheetName);
       });
   }, []);
 
@@ -121,6 +123,17 @@ const Settings: NextPage = () => {
     });
   };
 
+  const saveSheet = () => {
+    fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sheetName }),
+    }).then(() => {
+      setMessage('Nome da planilha salvo!');
+      setIsError(false);
+    });
+  };
+
   return (
     <Layout>
       <h2>Configurações</h2>
@@ -196,6 +209,17 @@ const Settings: NextPage = () => {
               Conectar Google
             </button>
           )}
+          <label htmlFor="sheetName">Nome da planilha:</label>
+          <input
+            id="sheetName"
+            type="text"
+            value={sheetName}
+            onChange={(e) => setSheetName(e.target.value)}
+            className={styles.input}
+          />
+          <button onClick={saveSheet} className={styles.button}>
+            Salvar nome
+          </button>
         </div>
       </div>
     </Layout>

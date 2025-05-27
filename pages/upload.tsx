@@ -26,6 +26,7 @@ const Upload: NextPage = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
   const [status, setStatus] = useState('');
+  const [sheetStatus, setSheetStatus] = useState('');
   const [result, setResult] = useState<{
     fields: {
       empresaRecebedora: string;
@@ -100,6 +101,28 @@ const Upload: NextPage = () => {
     }
   };
 
+  const sendToSheet = async () => {
+    if (!result) return;
+    setSheetStatus('Enviando para a planilha...');
+    const res = await fetch('/api/sheets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(result.fields),
+    });
+    if (res.ok) {
+      setSheetStatus('Conta adicionada à planilha!');
+    } else {
+      const text = await res.text();
+      let msg = text;
+      try {
+        msg = JSON.parse(text).error || text;
+      } catch {
+        // ignore
+      }
+      setSheetStatus(`Erro ao adicionar: ${msg}`);
+    }
+  };
+
   return (
     <Layout>
       <h2>Enviar Conta</h2>
@@ -157,9 +180,10 @@ const Upload: NextPage = () => {
             </tbody>
           </table>
           <div className={styles.actions}>
-            <button type="button" className={styles.button}>
+            <button type="button" className={styles.button} onClick={sendToSheet}>
               Adicione à planilha
             </button>
+            {sheetStatus && <div className={styles.status}>{sheetStatus}</div>}
             <button type="button" className={styles.button}>
               Adicione ao seu calendario
             </button>
