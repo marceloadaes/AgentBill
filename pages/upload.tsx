@@ -50,10 +50,19 @@ const Upload: NextPage = () => {
           setResult(data);
           setStatus('Processamento concluído!');
         } else {
-          setStatus('Falha ao processar o arquivo.');
+          const text = await res.text();
+          let message = text;
+          try {
+            const parsed = JSON.parse(text);
+            message = parsed.error || text;
+          } catch {
+            // leave message as text
+          }
+          setStatus(`Falha ao processar o arquivo: ${message}`);
         }
-      } catch {
-        setStatus('Falha ao processar o arquivo.');
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        setStatus(`Falha ao processar o arquivo: ${msg}`);
       }
     };
     reader.readAsDataURL(file);

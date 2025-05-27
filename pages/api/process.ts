@@ -62,7 +62,11 @@ export default async function handler(
     });
 
     if (!response.ok) {
-      res.status(500).json({ error: 'Failed to call OpenAI' });
+      const text = await response.text();
+      res
+        .status(response.status)
+        .json({ error: `OpenAI API error: ${text}` });
+
       return;
     }
 
@@ -105,6 +109,7 @@ export default async function handler(
 
     res.status(200).json({ fields, confidence });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to call OpenAI' });
+    const message = err instanceof Error ? err.message : String(err);
+    res.status(500).json({ error: message });
   }
 }
