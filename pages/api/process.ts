@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import pdfParse from 'pdf-parse';
 
 interface Fields {
   empresaRecebedora: string;
@@ -38,25 +39,44 @@ export default async function handler(
   }
 
   try {
-    const messages = [
-      {
-        role: 'system',
-        content:
-          'Responda somente com um objeto JSON contendo:\n- EmpresaRecebedora: entidade que receber\u00e1 o pagamento.\n- Pagador: pessoa ou empresa respons\u00e1vel pelo pagamento.\n- Tipo: categoria do servi\u00e7o.\n- Valor: total a pagar.\n- Vencimento: data limite de pagamento.\n- Codigo de Barras: sequ\u00eancia num\u00e9rica do c\u00f3digo de barras.\n- Confianca: valor entre 0 e 100 representando sua certeza geral.',
-      },
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: 'Extraia os dados da conta desta imagem.' },
-          {
-            type: 'image_url',
-            image_url: {
-              url: `data:${type};base64,${data}`,
+    let messages: any;
+    const systemMessage = {
+      role: 'system',
+      content:
+        'Responda somente com um objeto JSON contendo:\n- EmpresaRecebedora: entidade que receber\u00e1 o pagamento.\n- Pagador: pessoa ou empresa respons\u00e1vel pelo pagamento.\n- Tipo: categoria do servi\u00e7o.\n- Valor: total a pagar.\n- Vencimento: data limite de pagamento.\n- Codigo de Barras: sequ\u00eancia num\u00e9rica do c\u00f3digo de barras.\n- Confianca: valor entre 0 e 100 representando sua certeza geral.',
+    };
+
+    if (type === 'application/pdf') {
+      const pdfBuffer = Buffer.from(data, 'base64');
+      let text = '';
+      try {
+        const result = await pdfParse(pdfBuffer);
+        text = result.text.trim();
+      } catch {
+        // ignore parse errors
+      }
+      if (!text) {
+        res.status(400).json({ error: 'Nenhum texto encontrado no PDF.' });
+        return;
+      }
+      messages = [systemMessage, { role: 'user', content: text }];
+    } else {
+      messages = [
+        systemMessage,
+        {
+          role: 'user',
+          content: [
+            { type: 'text', text: 'Extraia os dados da conta desta imagem.' },
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:${type};base64,${data}`,
+              },
             },
-          },
-        ],
-      },
-    ];
+          ],
+        },
+      ];
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
