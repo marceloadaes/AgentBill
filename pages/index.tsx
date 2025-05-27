@@ -19,10 +19,6 @@ const Home: NextPage = () => {
           <h2>Planilha &rarr;</h2>
           <p>Veja todas as suas contas no Google Sheets.</p>
         </Link>
-        <Link href="/history" className={styles.card}>
-          <h2>Histórico &rarr;</h2>
-          <p>Veja arquivos processados anteriormente.</p>
-        </Link>
         <Link href="/settings" className={styles.card}>
           <h2>Configurações &rarr;</h2>
           <p>Configure sua integração com o Google.</p>
