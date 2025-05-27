@@ -18,13 +18,12 @@ own credentials:
 cp .env.example .env.local
 ```
 
-Then set the `NEXT_PUBLIC_GOOGLE_CLIENT_ID` environment variable with the client
-ID of your Google OAuth application. The redirect URL should point to
-`/oauth2callback` on your deployed site. A default client ID is bundled with the
-code so the application works out of the box, but you can override it by setting
-your own value. Once configured, you can connect or disconnect your Google
-account from the **Settings** page. If no value is provided, the default ID will
-be used.
+The application ships with a built-in Google OAuth client ID so it runs out of
+the box. If you prefer to use your own ID, update the `GOOGLE_CLIENT_ID`
+constant in `pages/settings.tsx`. The redirect URL should point to
+`/oauth2callback` on your deployed site. Once configured, you can connect or
+disconnect your Google account from the **Settings** page.
+
 
 ## Secure Configuration Storage
 
