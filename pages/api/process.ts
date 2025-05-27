@@ -12,6 +12,8 @@ interface Fields {
 interface ProcessResponse {
   fields: Fields;
   confidence: number;
+  prompt: any;
+  raw: any;
 }
 
 export default async function handler(
@@ -38,6 +40,26 @@ export default async function handler(
   }
 
   try {
+    const messages = [
+      {
+        role: 'system',
+        content:
+          'Responda somente com um objeto JSON contendo os campos: nomeConta, cedente, tipo, valor, vencimento, codigoBarras e confidence (0-1).',
+      },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: 'Extraia os dados da conta desta imagem.' },
+          {
+            type: 'image_url',
+            image_url: {
+              url: `data:${type};base64,${data}`,
+            },
+          },
+        ],
+      },
+    ];
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -46,25 +68,7 @@ export default async function handler(
       },
       body: JSON.stringify({
         model: 'gpt-4o',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'Responda somente com um objeto JSON contendo os campos: nomeConta, cedente, tipo, valor, vencimento, codigoBarras e confidence (0-1).',
-          },
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: 'Extraia os dados da conta desta imagem.' },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: `data:${type};base64,${data}`,
-                },
-              },
-            ],
-          },
-        ],
+        messages,
       }),
     });
 
@@ -94,6 +98,8 @@ export default async function handler(
           codigoBarras: '',
         },
         confidence: 0,
+        prompt: messages,
+        raw: result,
       });
       return;
     }
@@ -114,7 +120,7 @@ export default async function handler(
         ? parsed.confidence
         : filled / keys.length;
 
-    res.status(200).json({ fields, confidence });
+    res.status(200).json({ fields, confidence, prompt: messages, raw: result });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     res.status(500).json({ error: message });
