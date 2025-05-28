@@ -1,12 +1,40 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     const hasGoogleToken = Boolean(req.cookies.googleToken);
     const hasOpenAIKey = Boolean(req.cookies.openaiKey);
     const sheetName =
       req.cookies.sheetName || 'Agent Bill - Controle de Contas';
-    const sheetId = req.cookies.sheetId || '';
+    let sheetId = req.cookies.sheetId || '';
+
+    // Validate sheetId in case the spreadsheet was deleted or moved to trash
+    if (sheetId && hasGoogleToken) {
+      try {
+        const driveRes = await fetch(
+          `https://www.googleapis.com/drive/v3/files/${sheetId}?fields=trashed`,
+          { headers: { Authorization: `Bearer ${req.cookies.googleToken}` } },
+        );
+        if (driveRes.status === 404 || driveRes.status === 410) {
+          sheetId = '';
+        } else if (driveRes.ok) {
+          const data = await driveRes.json();
+          if (data.trashed) {
+            sheetId = '';
+          }
+        }
+      } catch (err) {
+        sheetId = '';
+      }
+
+      if (!sheetId) {
+        res.setHeader(
+          'Set-Cookie',
+          'sheetId=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax',
+        );
+      }
+    }
+
     res.status(200).json({
       hasGoogleToken,
       hasOpenAIKey,
