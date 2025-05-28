@@ -55,15 +55,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const contasSheet = metaData.sheets?.find(
           (s: any) => s.properties?.title === 'Contas',
         );
-        const otherSheets = metaData.sheets
-          ?.filter((s: any) => s.properties?.title !== 'Contas')
+        const defaultNamedSheets = metaData.sheets
+          ?.filter((s: any) =>
+            ['Sheet1', 'Página1'].includes(s.properties?.title as string),
+          )
           .map((s: any) => s.properties?.sheetId)
           .filter(Boolean);
         const requests = [] as any[];
         if (!contasSheet) {
           requests.push({ addSheet: { properties: { title: 'Contas' } } });
         }
-        for (const id of otherSheets || []) {
+        for (const id of defaultNamedSheets || []) {
           requests.push({ deleteSheet: { sheetId: id } });
         }
         if (requests.length > 0) {
@@ -155,9 +157,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
       }
       const metaData = await metaRes.json();
-      const defaultSheetId = metaData.sheets?.[0]?.properties?.sheetId;
+      const defaultNamedSheets = metaData.sheets
+        ?.filter((s: any) =>
+          ['Sheet1', 'Página1'].includes(s.properties?.title as string),
+        )
+        .map((s: any) => s.properties?.sheetId)
+        .filter(Boolean);
 
-      // add "Contas" sheet and remove default sheet
+      // add "Contas" sheet and remove default-named sheets
       const batchRes = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
         {
@@ -169,10 +176,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           body: JSON.stringify({
             requests: [
               { addSheet: { properties: { title: 'Contas' } } },
-              defaultSheetId
-                ? { deleteSheet: { sheetId: defaultSheetId } }
-                : undefined,
-            ].filter(Boolean),
+              ...defaultNamedSheets.map((id: number) => ({ deleteSheet: { sheetId: id } })),
+            ],
           }),
         },
       );
