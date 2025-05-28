@@ -28,13 +28,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     if (sheetId) {
+      // first check if the spreadsheet was moved to the trash
+      let trashed = false;
+      const driveRes = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${sheetId}?fields=trashed`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (driveRes.status === 404 || driveRes.status === 410) {
+        trashed = true;
+      } else if (driveRes.ok) {
+        const driveData = await driveRes.json();
+        trashed = Boolean(driveData.trashed);
+      }
+
       const checkRes = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
-      if (checkRes.status === 404 || checkRes.status === 410) {
+      if (checkRes.status === 404 || checkRes.status === 410 || trashed) {
         console.warn(
-          `Spreadsheet ${sheetId} not found (status ${checkRes.status}). Creating a new one.`,
+          `Spreadsheet ${sheetId} not found or trashed (status ${checkRes.status}). Creating a new one.`,
         );
         sheetId = undefined;
       } else if (checkRes.ok) {
