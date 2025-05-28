@@ -19,42 +19,45 @@ const Settings: NextPage = () => {
   const [sheetId, setSheetId] = useState('');
 
   useEffect(() => {
-    fetch('/api/config')
-      .then((res) => res.json())
-      .then((data) => {
-        setConnected(data.hasGoogleToken);
-        setKeyStored(data.hasOpenAIKey);
-        if (data.sheetName) setSheetName(data.sheetName);
-        if (data.sheetId) setSheetId(data.sheetId);
-      });
-  }, []);
+    const init = async () => {
+      const configRes = await fetch('/api/config');
+      const configData = await configRes.json();
+      setConnected(configData.hasGoogleToken);
+      setKeyStored(configData.hasOpenAIKey);
+      if (configData.sheetName) setSheetName(configData.sheetName);
+      if (configData.sheetId) setSheetId(configData.sheetId);
 
-  useEffect(() => {
-    if (connected) {
-      fetch('/api/userinfo')
-        .then((res) => (res.ok ? res.json() : Promise.reject()))
-        .then((data) => {
-          setUserEmail(data.email);
-          setUserIcon(data.picture);
-          setUserName(data.name);
-        })
-        .catch(() => {
+      if (configData.hasGoogleToken) {
+        try {
+          const userRes = await fetch('/api/userinfo');
+          if (userRes.ok) {
+            const userData = await userRes.json();
+            if (userData.email && userData.picture && userData.name) {
+              setUserEmail(userData.email);
+              setUserIcon(userData.picture);
+              setUserName(userData.name);
+            }
+          }
+        } catch {
           setUserEmail('');
           setUserIcon('');
           setUserName('');
-        });
-    } else {
-      setUserEmail('');
-      setUserIcon('');
-      setUserName('');
-    }
-  }, [connected]);
+        }
+      } else {
+        setUserEmail('');
+        setUserIcon('');
+        setUserName('');
+      }
+    };
+
+    init();
+  }, []);
+
 
   useEffect(() => {
     if (router.query.status === 'success') {
       setMessage('Conta do Google conectada!');
       setIsError(false);
-      setConnected(true);
       setShowRetry(false);
     } else if (router.query.status === 'error') {
       setMessage('Falha ao autenticar com o Google. Certifique-se de conceder acesso e tente novamente.');
@@ -172,12 +175,16 @@ const Settings: NextPage = () => {
           <h3 className={styles.sectionTitle}>Conexão Conta Google</h3>
           <div className={styles.status}>
             {connected ? (
-              <>
-                {userIcon && (
-                  <img src={userIcon} alt="account" className={styles.profileIcon} />
-                )}
-                <span>{userName} ({userEmail})</span>
-              </>
+              userEmail ? (
+                <>
+                  {userIcon && (
+                    <img src={userIcon} alt="account" className={styles.profileIcon} />
+                  )}
+                  <span>{userName} ({userEmail})</span>
+                </>
+              ) : (
+                <span className={styles.notConnected}>Informações indisponíveis</span>
+              )
             ) : (
               <>
                 <span className={styles.notConnected}>X</span>
