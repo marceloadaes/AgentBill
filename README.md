@@ -20,11 +20,9 @@ own credentials:
 cp .env.example .env.local
 ```
 
-The application ships with a built-in Google OAuth client ID so it runs out of
-the box. If you prefer to use your own ID, update the `GOOGLE_CLIENT_ID`
-constant in `pages/settings.tsx`. The redirect URL should point to
-`/oauth2callback` on your deployed site. Once configured, you can connect or
-disconnect your Google account from the **Settings** page.
+The application ships with a built-in Google OAuth client ID so it runs out of the box. If you prefer to use your own ID, update the `GOOGLE_CLIENT_ID` constant in `pages/settings.tsx`. The redirect URL should point to `/oauth2callback` on your deployed site. Once configured, you can connect or disconnect your Google account from the **Settings** page.
+
+For a full walkthrough on configuring Google and enabling the required APIs, see [docs/setup_google.md](docs/setup_google.md).
 
 ## Secure Configuration Storage
 
