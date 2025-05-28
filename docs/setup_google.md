@@ -31,4 +31,9 @@ O AgentBill já possui um ID de exemplo, mas você pode substituir pelo seu pró
 1. Ainda na **Biblioteca** de APIs, procure por **Google Calendar API**.
 2. Clique em **Ativar** para habilitar o acesso ao calendário.
 
-Depois dessas etapas, o aplicativo já poderá solicitar permissões para acessar suas planilhas e agenda quando conectar a conta Google pela página **Settings**.
+## 5. Ativar a API de Drive
+
+1. Permaneça na **Biblioteca** de APIs e procure por **Google Drive API**.
+2. Clique em **Ativar** para habilitar o acesso aos arquivos do Drive.
+
+Depois dessas etapas, o aplicativo já poderá solicitar permissões para acessar suas planilhas, agenda e arquivos do Drive quando conectar a conta Google pela página **Settings**.
