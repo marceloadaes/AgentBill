@@ -1,6 +1,7 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
+import styles from '../styles/Links.module.css';
 
 const Links: NextPage = () => {
   const [sheetId, setSheetId] = useState('');
@@ -21,13 +22,18 @@ const Links: NextPage = () => {
       {sheetId ? (
         <p>
           A planilha a seguir contém todas as contas que você enviou:{' '}
-          <a
-            href={`https://docs.google.com/spreadsheets/d/${sheetId}`}
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() =>
+              window.open(
+                `https://docs.google.com/spreadsheets/d/${sheetId}`,
+                '_blank',
+                'noopener,noreferrer'
+              )
+            }
+            className={styles.button}
           >
             {sheetName}
-          </a>
+          </button>
           .
         </p>
       ) : (
@@ -35,13 +41,18 @@ const Links: NextPage = () => {
       )}
       <p>
         Consulte seu calendário no{' '}
-        <a
-          href="https://calendar.google.com"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={() =>
+            window.open(
+              'https://calendar.google.com',
+              '_blank',
+              'noopener,noreferrer'
+            )
+          }
+          className={styles.button}
         >
           Google Calendar
-        </a>{' '}
+        </button>{' '}
         para acompanhar seus lembretes.
       </p>
     </Layout>
