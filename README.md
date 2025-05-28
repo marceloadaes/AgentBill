@@ -24,7 +24,7 @@ The application ships with a built-in Google OAuth client ID so it runs out of
 the box. If you prefer to use your own ID, update the `GOOGLE_CLIENT_ID`
 constant in `pages/settings.tsx`. The redirect URL should point to
 `/oauth2callback` on your deployed site. Once configured, you can connect or
-disconnect your Google account from the **Settings** page.
+disconnect your Google account from the **Settings** page. When connecting, the application requests access to Calendar, Sheets, Drive metadata and your basic profile so it can detect when a spreadsheet is moved to the trash.
 
 ## Secure Configuration Storage
 
