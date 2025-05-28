@@ -61,15 +61,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           )
           .map((s: any) => s.properties?.sheetId)
           .filter(Boolean);
-        const requests = [] as any[];
         if (!contasSheet) {
-          requests.push({ addSheet: { properties: { title: 'Contas' } } });
-        }
-        for (const id of defaultNamedSheets || []) {
-          requests.push({ deleteSheet: { sheetId: id } });
-        }
-        if (requests.length > 0) {
-          const batchRes = await fetch(
+          const addRes = await fetch(
             `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
             {
               method: 'POST',
@@ -77,13 +70,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ requests }),
+              body: JSON.stringify({ requests: [{ addSheet: { properties: { title: 'Contas' } } }] }),
             },
           );
-          if (!batchRes.ok) {
-            const text = await batchRes.text();
-            res.status(500).json({ error: `Failed to setup sheet: ${text}` });
+          if (!addRes.ok) {
+            const text = await addRes.text();
+            res.status(500).json({ error: `Failed to add sheet: ${text}` });
             return;
+          } else {
+            console.info('Added "Contas" sheet');
+          }
+        }
+
+        if ((defaultNamedSheets || []).length > 0) {
+          const deleteRes = await fetch(
+            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                requests: defaultNamedSheets.map((id: number) => ({ deleteSheet: { sheetId: id } })),
+              }),
+            },
+          );
+          if (!deleteRes.ok) {
+            const text = await deleteRes.text();
+            res.status(500).json({ error: `Failed to remove default sheets: ${text}` });
+            return;
+          } else {
+            console.info('Removed default sheets');
           }
         }
 
@@ -164,8 +182,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .map((s: any) => s.properties?.sheetId)
         .filter(Boolean);
 
-      // add "Contas" sheet and remove default-named sheets
-      const batchRes = await fetch(
+      // add "Contas" sheet if it doesn't exist yet
+      const addRes = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
         {
           method: 'POST',
@@ -173,18 +191,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            requests: [
-              { addSheet: { properties: { title: 'Contas' } } },
-              ...defaultNamedSheets.map((id: number) => ({ deleteSheet: { sheetId: id } })),
-            ],
-          }),
+          body: JSON.stringify({ requests: [{ addSheet: { properties: { title: 'Contas' } } }] }),
         },
       );
-      if (!batchRes.ok) {
-        const text = await batchRes.text();
-        res.status(500).json({ error: `Failed to setup sheets: ${text}` });
+      if (!addRes.ok) {
+        const text = await addRes.text();
+        res.status(500).json({ error: `Failed to add sheet: ${text}` });
         return;
+      } else {
+        console.info('Added "Contas" sheet');
+      }
+
+      // remove default-named sheets
+      if (defaultNamedSheets.length > 0) {
+        const deleteRes = await fetch(
+          `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              requests: defaultNamedSheets.map((id: number) => ({ deleteSheet: { sheetId: id } })),
+            }),
+          },
+        );
+        if (!deleteRes.ok) {
+          const text = await deleteRes.text();
+          res.status(500).json({ error: `Failed to remove default sheets: ${text}` });
+          return;
+        } else {
+          console.info('Removed default sheets');
+        }
       }
 
       // write header row on "Contas"
