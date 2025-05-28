@@ -295,6 +295,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
+    // check for existing row with same Valor and Vencimento
+    try {
+      const listRes = await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A4:F`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (listRes.ok) {
+        const listData = await listRes.json();
+        const rows: any[] = listData.values || [];
+        const duplicate = rows.some(
+          (r) => r[3] === fields.valor && r[4] === fields.vencimento,
+        );
+        if (duplicate) {
+          res
+            .status(409)
+            .json({ error: 'Conta já existe na planilha' });
+          return;
+        }
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      res.status(500).json({ error: message });
+      return;
+    }
+
     // append new row
     const appendRes = await fetch(
       `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A4:F4:append?valueInputOption=USER_ENTERED`,
