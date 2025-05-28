@@ -19,10 +19,11 @@
   gap: 1rem;
 }
 
-.nav a {
+.navLink {
   color: #ecf0f1;
+  font-weight: bold;
   transition: color 0.2s ease;
-  text-decoration: none;
+  text-decoration: none !important;
 }
 
 .disabled {
@@ -31,9 +32,8 @@
   cursor: default;
 }
 
-.nav a:hover {
+.navLink:hover {
   color: #ffffff;
-  text-decoration: underline;
 }
 
 .main {
