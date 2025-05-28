@@ -36,7 +36,9 @@ export default function Layout({ children }: Props) {
     return disable ? (
       <span className={styles.disabled}>{label}</span>
     ) : (
-      <Link href={href}>{label}</Link>
+      <Link href={href} className={styles.navLink}>
+        {label}
+      </Link>
     );
   };
 
@@ -47,7 +49,9 @@ export default function Layout({ children }: Props) {
           {renderLink('/', 'Início', !configured)}
           {renderLink('/upload', 'Enviar Conta', !configured)}
           {renderLink('/links', 'Links externos', !configured)}
-          <Link href="/settings">Configurações</Link>
+          <Link href="/settings" className={styles.navLink}>
+            Configurações
+          </Link>
         </nav>
       </header>
       <div className={styles.logoContainer}>
