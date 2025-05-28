@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { LOGO_DATA_URL } from '../../utils/logoData';
 
 interface Fields {
   empresaRecebedora: string;
@@ -40,10 +39,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         sheetId = undefined;
       } else if (checkRes.ok) {
         const metaData = await checkRes.json();
-        const contasExists = metaData.sheets?.some(
+        const contasSheet = metaData.sheets?.find(
           (s: any) => s.properties?.title === 'Contas',
         );
-        if (!contasExists) {
+        const otherSheets = metaData.sheets
+          ?.filter((s: any) => s.properties?.title !== 'Contas')
+          .map((s: any) => s.properties?.sheetId)
+          .filter(Boolean);
+        const requests = [] as any[];
+        if (!contasSheet) {
+          requests.push({ addSheet: { properties: { title: 'Contas' } } });
+        }
+        for (const id of otherSheets || []) {
+          requests.push({ deleteSheet: { sheetId: id } });
+        }
+        if (requests.length > 0) {
           const batchRes = await fetch(
             `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
             {
@@ -52,9 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({
-                requests: [{ addSheet: { properties: { title: 'Contas' } } }],
-              }),
+              body: JSON.stringify({ requests }),
             },
           );
           if (!batchRes.ok) {
@@ -62,9 +70,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             res.status(500).json({ error: `Failed to setup sheet: ${text}` });
             return;
           }
+        }
 
+        if (!contasSheet) {
           const headerRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A7:F7?valueInputOption=RAW`,
+            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A3:F3?valueInputOption=RAW`,
             {
               method: 'PUT',
               headers: {
@@ -161,7 +171,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // write header row on "Contas"
       const headerRes = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A7:F7?valueInputOption=RAW`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A3:F3?valueInputOption=RAW`,
         {
           method: 'PUT',
           headers: {
@@ -213,28 +223,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               body: JSON.stringify({
                 requests: [
                   {
-                    mergeCells: {
-                      range: {
-                        sheetId: contasSheetId,
-                        startRowIndex: 0,
-                        endRowIndex: 6,
-                        startColumnIndex: 0,
-                        endColumnIndex: 6,
-                      },
-                      mergeType: 'MERGE_ALL',
-                    },
-                  },
-                  {
                     updateCells: {
                       rows: [
                         {
                           values: [
                             {
-                              userEnteredValue: {
-                                formulaValue: `=IMAGE("${LOGO_DATA_URL}")`,
-                              },
+                              userEnteredValue: { stringValue: 'Agent Bill' },
                               userEnteredFormat: {
-                                horizontalAlignment: 'CENTER',
+                                textFormat: { fontSize: 40, bold: true },
                               },
                             },
                           ],
@@ -245,16 +241,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         rowIndex: 0,
                         columnIndex: 0,
                       },
-                      fields:
-                        'userEnteredValue,userEnteredFormat.horizontalAlignment',
+                      fields: 'userEnteredValue,userEnteredFormat.textFormat',
                     },
                   },
                   {
                     repeatCell: {
                       range: {
                         sheetId: contasSheetId,
-                        startRowIndex: 6,
-                        endRowIndex: 7,
+                        startRowIndex: 2,
+                        endRowIndex: 3,
                         startColumnIndex: 0,
                         endColumnIndex: 6,
                       },
@@ -284,7 +279,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // append new row
     const appendRes = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A7:F7:append?valueInputOption=USER_ENTERED`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A4:F4:append?valueInputOption=USER_ENTERED`,
       {
         method: 'POST',
         headers: {
