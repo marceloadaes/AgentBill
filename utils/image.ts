@@ -1,4 +1,4 @@
-export const MAX_IMAGE_BYTES = 1024 * 1024;
+export const MAX_IMAGE_BYTES = 700 * 1024;
 
 export function fileToDataURL(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
