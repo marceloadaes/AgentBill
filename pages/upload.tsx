@@ -42,8 +42,18 @@ const Upload: NextPage = () => {
     confidence: number;
   } | null>(null);
 
+  const [fields, setFields] = useState({
+    empresaRecebedora: '',
+    pagador: '',
+    tipo: '',
+    valor: '',
+    vencimento: '',
+    codigoBarras: '',
+  });
+
   useEffect(() => {
     if (result) {
+      setFields(result.fields);
       setEventDateTime(`${formatDate(result.fields.vencimento)}T10:00`);
       setAlarm(false);
       setCalendarStatus('');
@@ -119,7 +129,7 @@ const Upload: NextPage = () => {
       const res = await fetch('/api/sheets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(result.fields),
+        body: JSON.stringify(fields),
       });
       if (res.ok) {
         const data = await res.json();
@@ -156,7 +166,7 @@ const Upload: NextPage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          fields: result.fields,
+          fields,
           dateTime: eventDateTime,
           alarm,
         }),
@@ -207,27 +217,77 @@ const Upload: NextPage = () => {
             <tbody>
               <tr>
                 <th>Empresa Recebedora</th>
-                <td>{result.fields.empresaRecebedora || '-'}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={fields.empresaRecebedora}
+                    onChange={(e) =>
+                      setFields({ ...fields, empresaRecebedora: e.target.value })
+                    }
+                    className={styles.input}
+                  />
+                </td>
               </tr>
               <tr>
                 <th>Pagador</th>
-                <td>{result.fields.pagador || '-'}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={fields.pagador}
+                    onChange={(e) =>
+                      setFields({ ...fields, pagador: e.target.value })
+                    }
+                    className={styles.input}
+                  />
+                </td>
               </tr>
               <tr>
                 <th>Tipo</th>
-                <td>{result.fields.tipo || '-'}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={fields.tipo}
+                    onChange={(e) => setFields({ ...fields, tipo: e.target.value })}
+                    className={styles.input}
+                  />
+                </td>
               </tr>
               <tr>
                 <th>Valor</th>
-                <td>{result.fields.valor || '-'}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={fields.valor}
+                    onChange={(e) => setFields({ ...fields, valor: e.target.value })}
+                    className={styles.input}
+                  />
+                </td>
               </tr>
               <tr>
                 <th>Vencimento</th>
-                <td>{result.fields.vencimento || '-'}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={fields.vencimento}
+                    onChange={(e) =>
+                      setFields({ ...fields, vencimento: e.target.value })
+                    }
+                    className={styles.input}
+                  />
+                </td>
               </tr>
               <tr>
                 <th>Código de barras</th>
-                <td>{result.fields.codigoBarras || '-'}</td>
+                <td>
+                  <input
+                    type="text"
+                    value={fields.codigoBarras}
+                    onChange={(e) =>
+                      setFields({ ...fields, codigoBarras: e.target.value })
+                    }
+                    className={styles.input}
+                  />
+                </td>
               </tr>
               <tr>
                 <th>Confiança</th>
