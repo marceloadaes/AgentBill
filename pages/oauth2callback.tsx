@@ -13,7 +13,10 @@ export default function OAuthCallback() {
         fetch('/api/googleAuth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code }),
+          body: JSON.stringify({
+            code,
+            redirect_uri: `${window.location.origin}/oauth2callback`,
+          }),
         })
           .then(async (r) => {
             if (r.ok) return r.json();
