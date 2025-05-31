@@ -109,4 +109,5 @@ Static files served from `/`.
 |------|-------------|
 | `utils/image.ts` | Helper functions to read and compress images. |
 | `utils/logoData.ts` | Base64 encoded logo data. **Deprecated** |
+| `utils/googleAuth.ts` | Helpers to exchange and refresh Google OAuth tokens. |
 

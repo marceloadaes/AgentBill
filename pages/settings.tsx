@@ -60,13 +60,17 @@ const Settings: NextPage = () => {
       setIsError(false);
       setShowRetry(false);
     } else if (router.query.status === 'error') {
-      setMessage('Falha ao autenticar com o Google. Certifique-se de conceder acesso e tente novamente.');
+      const msg =
+        typeof router.query.message === 'string'
+          ? decodeURIComponent(router.query.message)
+          : 'Falha ao autenticar com o Google. Certifique-se de conceder acesso e tente novamente.';
+      setMessage(msg);
       setIsError(true);
       setShowRetry(true);
     } else {
       setShowRetry(false);
     }
-  }, [router.query.status]);
+  }, [router.query.status, router.query.message]);
 
 
   // Hard-coded default Google OAuth client ID so the app works without config
@@ -84,7 +88,9 @@ const Settings: NextPage = () => {
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: `${window.location.origin}/oauth2callback`,
-      response_type: 'token',
+      response_type: 'code',
+      access_type: 'offline',
+      prompt: 'consent',
       scope:
         'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
       include_granted_scopes: 'true',

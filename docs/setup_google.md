@@ -20,6 +20,7 @@ O AgentBill já possui um ID de exemplo, mas você pode substituir pelo seu pró
 2. Localize a constante `GOOGLE_CLIENT_ID` perto do início do componente.
 3. Substitua o valor existente pelo ID obtido na etapa anterior.
 4. Opcionalmente, crie um arquivo `.env.local` a partir de `.env.example` e mantenha o mesmo ID para facilitar a configuração local.
+5. No mesmo arquivo `.env.local`, defina `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` e `GOOGLE_REDIRECT_URI` com os valores do seu projeto. Esses dados permitem que o backend troque o código de autorização por tokens de acesso e atualização.
 
 ## 3. Ativar a API de Sheets
 

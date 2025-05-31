@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getValidAccessToken } from '../../utils/googleAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
@@ -6,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const token = req.cookies.googleToken;
+  const token = await getValidAccessToken(req, res);
   const { sheetId, sheetName } = req.body;
   if (!token) {
     res.status(401).json({ error: 'Not authenticated with Google' });
