@@ -14,3 +14,8 @@ When the first bill is inserted the header row should be styled for readability:
 - Make the header text white and bold.
 
 These steps ensure the spreadsheet matches the look and feel of Agent Bill.
+
+## Adjusting Column Widths
+After each bill is appended the columns should automatically resize to fit the
+largest content in each column. This keeps all text visible without manual
+adjustment.
