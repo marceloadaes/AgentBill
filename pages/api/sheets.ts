@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getValidAccessToken } from '../../utils/googleAuth';
 
 interface Fields {
   empresaRecebedora: string;
@@ -15,7 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const token = req.cookies.googleToken;
+  const token = await getValidAccessToken(req, res);
   if (!token) {
     res.status(401).json({ error: 'Not authenticated with Google' });
     return;

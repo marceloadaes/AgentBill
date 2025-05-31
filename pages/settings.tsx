@@ -84,7 +84,9 @@ const Settings: NextPage = () => {
     const params = new URLSearchParams({
       client_id: clientId,
       redirect_uri: `${window.location.origin}/oauth2callback`,
-      response_type: 'token',
+      response_type: 'code',
+      access_type: 'offline',
+      prompt: 'consent',
       scope:
         'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.metadata.readonly https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
       include_granted_scopes: 'true',

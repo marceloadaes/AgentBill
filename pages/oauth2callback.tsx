@@ -7,15 +7,15 @@ export default function OAuthCallback() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      const token = params.get('access_token');
-      if (token) {
-        fetch('/api/config', {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      if (code) {
+        fetch('/api/googleAuth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ googleToken: token }),
+          body: JSON.stringify({ code }),
         })
+          .then((r) => (r.ok ? r.json() : Promise.reject()))
           .then(() => {
             window.dispatchEvent(new Event('config-changed'));
             router.replace('/settings?status=success');

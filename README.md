@@ -20,6 +20,10 @@ own credentials:
 cp .env.example .env.local
 ```
 
+Make sure to fill in `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` and
+`GOOGLE_REDIRECT_URI` in `.env.local` so the server can refresh expired tokens
+automatically.
+
 
 The application ships with a built-in Google OAuth client ID so it runs out of
 the box. If you prefer to use your own ID, update the `GOOGLE_CLIENT_ID`

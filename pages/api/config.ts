@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { getValidAccessToken } from '../../utils/googleAuth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -11,9 +12,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Validate sheetId in case the spreadsheet was deleted or moved to trash
     if (sheetId && hasGoogleToken) {
       try {
+        const token = await getValidAccessToken(req, res);
+        if (!token) {
+          throw new Error('No token');
+        }
         const driveRes = await fetch(
           `https://www.googleapis.com/drive/v3/files/${sheetId}?fields=trashed`,
-          { headers: { Authorization: `Bearer ${req.cookies.googleToken}` } },
+          { headers: { Authorization: `Bearer ${token}` } },
         );
         if (driveRes.status === 404 || driveRes.status === 410) {
           sheetId = '';
@@ -49,6 +54,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (req.body.googleToken) {
       cookies.push(`googleToken=${req.body.googleToken}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`);
     }
+    if (req.body.googleRefreshToken) {
+      cookies.push(`googleRefreshToken=${req.body.googleRefreshToken}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`);
+    }
+    if (req.body.googleTokenExpires) {
+      cookies.push(`googleTokenExpires=${req.body.googleTokenExpires}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`);
+    }
     if (req.body.openaiKey) {
       cookies.push(`openaiKey=${req.body.openaiKey}; Path=/; HttpOnly; SameSite=Lax; Max-Age=31536000`);
     }
@@ -69,6 +80,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const cookies: string[] = [];
     if (req.query.key === 'google' || !req.query.key) {
       cookies.push('googleToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax');
+      cookies.push('googleRefreshToken=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax');
+      cookies.push('googleTokenExpires=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax');
     }
     if (req.query.key === 'openai' || !req.query.key) {
       cookies.push('openaiKey=; Path=/; HttpOnly; Max-Age=0; SameSite=Lax');
