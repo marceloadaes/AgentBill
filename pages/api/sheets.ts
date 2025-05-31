@@ -328,6 +328,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       );
     }
+
+    if (targetSheetId) {
+      await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            requests: [
+              {
+                autoResizeDimensions: {
+                  dimensions: {
+                    sheetId: targetSheetId,
+                    dimension: 'COLUMNS',
+                    startIndex: 0,
+                    endIndex: 6,
+                  },
+                },
+              },
+            ],
+          }),
+        },
+      );
+    }
     res
       .status(200)
       .json({
