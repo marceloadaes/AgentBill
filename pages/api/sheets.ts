@@ -235,6 +235,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // check for existing row with same Valor and Vencimento
+    let isFirstBill = false;
     try {
       const listRes = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
@@ -245,6 +246,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (listRes.ok) {
         const listData = await listRes.json();
         const rows: any[] = listData.values || [];
+        isFirstBill = rows.length === 0;
         const duplicate = rows.some(
           (r) => r[3] === fields.valor && r[4] === fields.vencimento,
         );
@@ -292,6 +294,48 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const appendData = await appendRes.json();
+
+    if (isFirstBill && targetSheetId) {
+      await fetch(
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            requests: [
+              {
+                repeatCell: {
+                  range: {
+                    sheetId: targetSheetId,
+                    startRowIndex: 2,
+                    endRowIndex: 3,
+                    startColumnIndex: 0,
+                    endColumnIndex: 6,
+                  },
+                  cell: {
+                    userEnteredFormat: {
+                      backgroundColor: {
+                        red: 44 / 255,
+                        green: 62 / 255,
+                        blue: 80 / 255,
+                      },
+                      textFormat: {
+                        foregroundColor: { red: 1, green: 1, blue: 1 },
+                        bold: true,
+                      },
+                    },
+                  },
+                  fields: 'userEnteredFormat(backgroundColor,textFormat)',
+                },
+              },
+            ],
+          }),
+        },
+      );
+    }
     res
       .status(200)
       .json({
