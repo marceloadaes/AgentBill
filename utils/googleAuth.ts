@@ -12,7 +12,7 @@ const CLIENT_ID =
   process.env.GOOGLE_CLIENT_ID ||
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
   '198927534674-0akhqu4ip9hg276ag2mliknkh7pvp4op.apps.googleusercontent.com';
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || 'dummy_secret';
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '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';
 const REDIRECT_URI =
   process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/oauth2callback';
 
