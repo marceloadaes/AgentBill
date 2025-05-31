@@ -25,6 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const sheetName = req.cookies.sheetName || 'Agent Bill - Controle de Contas';
   let sheetId = req.cookies.sheetId;
   let createdNewSheet = false;
+  let targetSheet = 'Contas';
+  let targetSheetId: number | undefined;
 
   try {
     if (sheetId) {
@@ -55,59 +57,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const contasSheet = metaData.sheets?.find(
           (s: any) => s.properties?.title === 'Contas',
         );
-        const defaultNamedSheets = metaData.sheets
-          ?.filter((s: any) =>
-            ['Sheet1', 'Página1'].includes(s.properties?.title as string),
-          )
-          .map((s: any) => s.properties?.sheetId)
-          .filter(Boolean);
-        if (!contasSheet) {
-          const addRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
-            {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ requests: [{ addSheet: { properties: { title: 'Contas' } } }] }),
-            },
-          );
-          if (!addRes.ok) {
-            const text = await addRes.text();
-            res.status(500).json({ error: `Failed to add sheet: ${text}` });
-            return;
-          } else {
-            console.info('Added "Contas" sheet');
-          }
-        }
-
-        if ((defaultNamedSheets || []).length > 0) {
-          const deleteRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
-            {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                requests: defaultNamedSheets.map((id: number) => ({ deleteSheet: { sheetId: id } })),
-              }),
-            },
-          );
-          if (!deleteRes.ok) {
-            const text = await deleteRes.text();
-            res.status(500).json({ error: `Failed to remove default sheets: ${text}` });
-            return;
-          } else {
-            console.info('Removed default sheets');
-          }
-        }
-
-        if (!contasSheet) {
+        if (contasSheet) {
+          targetSheet = 'Contas';
+          targetSheetId = contasSheet.properties?.sheetId;
+        } else {
+          const firstSheet = metaData.sheets?.[0];
+          targetSheet = firstSheet?.properties?.title || 'Sheet1';
+          targetSheetId = firstSheet?.properties?.sheetId;
           const headerRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A3:F3?valueInputOption=RAW`,
+            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
+              targetSheet,
+            )}!A3:F3?valueInputOption=RAW`,
             {
               method: 'PUT',
               headers: {
@@ -175,60 +135,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
       }
       const metaData = await metaRes.json();
-      const defaultNamedSheets = metaData.sheets
-        ?.filter((s: any) =>
-          ['Sheet1', 'Página1'].includes(s.properties?.title as string),
-        )
-        .map((s: any) => s.properties?.sheetId)
-        .filter(Boolean);
+      const firstSheet = metaData.sheets?.[0];
+      targetSheet = firstSheet?.properties?.title || 'Sheet1';
+      targetSheetId = firstSheet?.properties?.sheetId;
 
-      // add "Contas" sheet if it doesn't exist yet
-      const addRes = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ requests: [{ addSheet: { properties: { title: 'Contas' } } }] }),
-        },
-      );
-      if (!addRes.ok) {
-        const text = await addRes.text();
-        res.status(500).json({ error: `Failed to add sheet: ${text}` });
-        return;
-      } else {
-        console.info('Added "Contas" sheet');
-      }
-
-      // remove default-named sheets
-      if (defaultNamedSheets.length > 0) {
-        const deleteRes = await fetch(
-          `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              requests: defaultNamedSheets.map((id: number) => ({ deleteSheet: { sheetId: id } })),
-            }),
-          },
-        );
-        if (!deleteRes.ok) {
-          const text = await deleteRes.text();
-          res.status(500).json({ error: `Failed to remove default sheets: ${text}` });
-          return;
-        } else {
-          console.info('Removed default sheets');
-        }
-      }
-
-      // write header row on "Contas"
       const headerRes = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A3:F3?valueInputOption=RAW`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
+          targetSheet,
+        )}!A3:F3?valueInputOption=RAW`,
         {
           method: 'PUT',
           headers: {
@@ -255,89 +169,77 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
       }
 
-      // fetch sheet id for "Contas" to apply formatting and logo
-      const metaRes2 = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      if (metaRes2.ok) {
-        const data = await metaRes2.json();
-        const contasSheet = data.sheets?.find(
-          (s: any) => s.properties?.title === 'Contas',
-        );
-        const contasSheetId = contasSheet?.properties?.sheetId;
-        if (contasSheetId) {
-          await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
-            {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                requests: [
-                  {
-                    updateCells: {
-                      rows: [
-                        {
-                          values: [
-                            {
-                              userEnteredValue: { stringValue: 'Agent Bill' },
-                              userEnteredFormat: {
-                                textFormat: { fontSize: 40, bold: true },
-                              },
-                            },
-                          ],
-                        },
-                      ],
-                      start: {
-                        sheetId: contasSheetId,
-                        rowIndex: 0,
-                        columnIndex: 0,
-                      },
-                      fields: 'userEnteredValue,userEnteredFormat.textFormat',
-                    },
-                  },
-                  {
-                    repeatCell: {
-                      range: {
-                        sheetId: contasSheetId,
-                        startRowIndex: 2,
-                        endRowIndex: 3,
-                        startColumnIndex: 0,
-                        endColumnIndex: 6,
-                      },
-                      cell: {
-                        userEnteredFormat: {
-                          backgroundColor: {
-                            red: 44 / 255,
-                            green: 62 / 255,
-                            blue: 80 / 255,
-                          },
-                          textFormat: {
-                            foregroundColor: { red: 1, green: 1, blue: 1 },
-                            bold: true,
-                          },
-                        },
-                      },
-                      fields: 'userEnteredFormat(backgroundColor,textFormat)',
-                    },
-                  },
-                ],
-              }),
+      if (targetSheetId) {
+        await fetch(
+          `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
             },
-          );
-        }
+            body: JSON.stringify({
+              requests: [
+                {
+                  updateCells: {
+                    rows: [
+                      {
+                        values: [
+                          {
+                            userEnteredValue: { stringValue: 'Agent Bill' },
+                            userEnteredFormat: {
+                              textFormat: { fontSize: 40, bold: true },
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                    start: {
+                      sheetId: targetSheetId,
+                      rowIndex: 0,
+                      columnIndex: 0,
+                    },
+                    fields: 'userEnteredValue,userEnteredFormat.textFormat',
+                  },
+                },
+                {
+                  repeatCell: {
+                    range: {
+                      sheetId: targetSheetId,
+                      startRowIndex: 2,
+                      endRowIndex: 3,
+                      startColumnIndex: 0,
+                      endColumnIndex: 6,
+                    },
+                    cell: {
+                      userEnteredFormat: {
+                        backgroundColor: {
+                          red: 44 / 255,
+                          green: 62 / 255,
+                          blue: 80 / 255,
+                        },
+                        textFormat: {
+                          foregroundColor: { red: 1, green: 1, blue: 1 },
+                          bold: true,
+                        },
+                      },
+                    },
+                    fields: 'userEnteredFormat(backgroundColor,textFormat)',
+                  },
+                },
+              ],
+            }),
+          },
+        );
       }
     }
 
     // check for existing row with same Valor and Vencimento
     try {
       const listRes = await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A4:F`,
+        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
+          targetSheet,
+        )}!A4:F`,
         { headers: { Authorization: `Bearer ${token}` } },
       );
       if (listRes.ok) {
@@ -361,7 +263,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // append new row
     const appendRes = await fetch(
-      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Contas!A4:F4:append?valueInputOption=USER_ENTERED`,
+      `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
+        targetSheet,
+      )}!A4:F4:append?valueInputOption=USER_ENTERED`,
       {
         method: 'POST',
         headers: {
