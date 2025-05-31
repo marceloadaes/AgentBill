@@ -60,13 +60,17 @@ const Settings: NextPage = () => {
       setIsError(false);
       setShowRetry(false);
     } else if (router.query.status === 'error') {
-      setMessage('Falha ao autenticar com o Google. Certifique-se de conceder acesso e tente novamente.');
+      const errMsg =
+        typeof router.query.message === 'string' && router.query.message
+          ? router.query.message
+          : 'Falha ao autenticar com o Google. Certifique-se de conceder acesso e tente novamente.';
+      setMessage(errMsg);
       setIsError(true);
       setShowRetry(true);
     } else {
       setShowRetry(false);
     }
-  }, [router.query.status]);
+  }, [router.query.status, router.query.message]);
 
 
   // Hard-coded default Google OAuth client ID so the app works without config
