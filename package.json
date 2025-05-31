@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "AI Test Project - A web agent that reads an image of a bill, schedule on Google Agenda and reports on a Google Spreadsheet",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node utils/initEnv.js && next dev",
     "build": "next build",
     "start": "next start",
     "test": "echo \"No tests specified\""
