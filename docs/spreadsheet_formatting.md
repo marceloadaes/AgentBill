@@ -3,7 +3,7 @@
 These guidelines explain how the Google Sheet **Agent Bill -- Controle de Contas** should be formatted.
 
 ## Adding the Agent Bill title
-1. In cell `A1` of the `Contas` sheet enter the text **Agent Bill**.
+1. In cell `A1` of the first sheet enter the text **Agent Bill**.
 2. Set the font size to **40** and make it **bold**.
 3. Do not merge any cells when adding the title.
 

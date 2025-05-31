@@ -25,7 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const sheetName = req.cookies.sheetName || 'Agent Bill - Controle de Contas';
   let sheetId = req.cookies.sheetId;
   let createdNewSheet = false;
-  let targetSheet = 'Contas';
+  let targetSheet = '';
   let targetSheetId: number | undefined;
 
   try {
@@ -54,30 +54,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         sheetId = undefined;
       } else if (checkRes.ok) {
         const metaData = await checkRes.json();
-        const contasSheet = metaData.sheets?.find(
-          (s: any) => s.properties?.title === 'Contas',
-        );
-        if (contasSheet) {
-          targetSheet = 'Contas';
-          targetSheetId = contasSheet.properties?.sheetId;
-        } else {
-          const firstSheet = metaData.sheets?.[0];
-          targetSheet = firstSheet?.properties?.title || 'Sheet1';
-          targetSheetId = firstSheet?.properties?.sheetId;
-          const headerRes = await fetch(
-            `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
-              targetSheet,
-            )}!A3:F3?valueInputOption=RAW`,
-            {
-              method: 'PUT',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                values: [
-                  [
-                    'Empresa Recebedora',
+        const firstSheet = metaData.sheets?.[0];
+        targetSheet = firstSheet?.properties?.title || 'Sheet1';
+        targetSheetId = firstSheet?.properties?.sheetId;
+        const headerRes = await fetch(
+          `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
+            targetSheet,
+          )}!A3:F3?valueInputOption=RAW`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              values: [
+                [
+                  'Empresa Recebedora',
                     'Pagador',
                     'Tipo',
                     'Valor',
@@ -94,7 +87,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             return;
           }
         }
-      }
     }
 
     if (!sheetId) {
