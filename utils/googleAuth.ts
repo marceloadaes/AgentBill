@@ -13,7 +13,7 @@ const CLIENT_ID =
   process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
   '198927534674-0akhqu4ip9hg276ag2mliknkh7pvp4op.apps.googleusercontent.com';
 const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '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';
-const REDIRECT_URI =
+const DEFAULT_REDIRECT_URI =
   process.env.GOOGLE_REDIRECT_URI || 'https://agent-bill.vercel.app/oauth2callback';
 
 interface TokenResponse {
@@ -22,12 +22,15 @@ interface TokenResponse {
   refresh_token?: string;
 }
 
-export async function exchangeCode(code: string): Promise<TokenResponse> {
+export async function exchangeCode(
+  code: string,
+  redirect_uri: string = DEFAULT_REDIRECT_URI,
+): Promise<TokenResponse> {
   const params = new URLSearchParams({
     code,
     client_id: CLIENT_ID,
     client_secret: CLIENT_SECRET,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri,
     grant_type: 'authorization_code',
   });
 

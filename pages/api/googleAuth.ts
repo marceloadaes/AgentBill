@@ -7,14 +7,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
-  const { code } = req.body as { code?: string };
+  const { code, redirect_uri } = req.body as {
+    code?: string;
+    redirect_uri?: string;
+  };
   if (!code) {
     res.status(400).json({ error: 'Missing authorization code' });
     return;
   }
 
   try {
-    const data = await exchangeCode(code);
+    const data = await exchangeCode(code, redirect_uri);
     const cookies: string[] = [];
     if (data.access_token) {
       cookies.push(
