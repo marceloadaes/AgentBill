@@ -1,8 +1,20 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-const CLIENT_ID = process.env.GOOGLE_CLIENT_ID || process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '';
-const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
-const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || '';
+// Use built-in credentials when environment variables are missing so the app
+// works out of the box during local development.
+if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+  console.warn(
+    '⚠️ Google OAuth client ID/secret missing. Using fallback values for local development.',
+  );
+}
+
+const CLIENT_ID =
+  process.env.GOOGLE_CLIENT_ID ||
+  process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ||
+  '198927534674-0akhqu4ip9hg276ag2mliknkh7pvp4op.apps.googleusercontent.com';
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || 'dummy_secret';
+const REDIRECT_URI =
+  process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/oauth2callback';
 
 interface TokenResponse {
   access_token: string;
