@@ -170,7 +170,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return;
       }
 
-      if (targetSheetId) {
+      if (targetSheetId !== undefined) {
         await fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
           {
@@ -296,7 +296,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const appendData = await appendRes.json();
 
-      if (isFirstBill && targetSheetId) {
+      if (isFirstBill && targetSheetId !== undefined) {
         await fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
           {
@@ -360,7 +360,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         );
       }
 
-    if (targetSheetId) {
+    if (targetSheetId !== undefined) {
       await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
         {
