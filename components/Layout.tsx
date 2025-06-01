@@ -70,10 +70,17 @@ export default function Layout({ children }: Props) {
     label: string,
     disable: boolean
   ) => {
-    return disable ? (
-      <span className={styles.disabled}>{label}</span>
-    ) : (
-      <Link href={href} className={styles.navLink}>
+    if (disable) {
+      return <span className={styles.disabled}>{label}</span>;
+    }
+
+    const linkClass =
+      router.pathname === href
+        ? `${styles.navLink} ${styles.active}`
+        : styles.navLink;
+
+    return (
+      <Link href={href} className={linkClass}>
         {label}
       </Link>
     );
@@ -86,7 +93,14 @@ export default function Layout({ children }: Props) {
           {renderLink('/', 'Início', !configured)}
           {renderLink('/upload', 'Enviar Conta', !configured)}
           {renderLink('/links', 'Planilha', !configured)}
-          <Link href="/settings" className={styles.navLink}>
+          <Link
+            href="/settings"
+            className={
+              router.pathname === '/settings'
+                ? `${styles.navLink} ${styles.active}`
+                : styles.navLink
+            }
+          >
             Configurações
           </Link>
         </nav>

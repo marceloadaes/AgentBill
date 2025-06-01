@@ -21,9 +21,12 @@
 
 .navLink {
   color: #ecf0f1;
-  font-weight: bold;
   transition: color 0.2s ease;
   text-decoration: none !important;
+}
+
+.active {
+  font-weight: bold;
 }
 
 .disabled {
