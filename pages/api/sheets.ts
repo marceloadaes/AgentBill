@@ -56,8 +56,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else if (checkRes.ok) {
         const metaData = await checkRes.json();
         const firstSheet = metaData.sheets?.[0];
-        targetSheet = firstSheet?.properties?.title || 'Sheet1';
+        targetSheet = firstSheet?.properties?.title;
         targetSheetId = firstSheet?.properties?.sheetId;
+        if (!targetSheet) {
+          res.status(500).json({ error: 'No sheet found in spreadsheet' });
+          return;
+        }
         const headerRes = await fetch(
           `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
             targetSheet,
@@ -129,8 +133,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       const metaData = await metaRes.json();
       const firstSheet = metaData.sheets?.[0];
-      targetSheet = firstSheet?.properties?.title || 'Sheet1';
+      targetSheet = firstSheet?.properties?.title;
       targetSheetId = firstSheet?.properties?.sheetId;
+      if (!targetSheet) {
+        res.status(500).json({ error: 'No sheet found in spreadsheet' });
+        return;
+      }
 
       const headerRes = await fetch(
         `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${encodeURIComponent(
