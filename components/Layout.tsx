@@ -48,7 +48,7 @@ export default function Layout({ children }: Props) {
         <nav className={styles.nav}>
           {renderLink('/', 'Início', !configured)}
           {renderLink('/upload', 'Enviar Conta', !configured)}
-          {renderLink('/links', 'Links externos', !configured)}
+          {renderLink('/links', 'Planilha', !configured)}
           <Link href="/settings" className={styles.navLink}>
             Configurações
           </Link>

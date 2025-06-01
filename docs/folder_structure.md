@@ -57,7 +57,7 @@ This document summarizes the folder layout of **AgentBill** and describes the pu
 |------|-------------|
 | `pages/_app.tsx` | Custom App component that sets global metadata. |
 | `pages/index.tsx` | Home page with links to main features. |
-| `pages/links.tsx` | Shows links to the Google Sheet and Calendar. |
+| `pages/links.tsx` | Displays the Planilha page with access to the Google Sheet and Calendar. |
 | `pages/settings.tsx` | Manage Google OAuth and OpenAI key. |
 | `pages/upload.tsx` | Upload page for bills. |
 | `pages/oauth2callback.tsx` | Handles Google OAuth redirect. |
@@ -98,7 +98,7 @@ Static files served from `/`.
 |------|-------------|
 | `styles/globals.css` | Global styles loaded by `_app.tsx`. |
 | `styles/Home.module.css` | Styles for the home page. |
-| `styles/Links.module.css` | Styles for the links page. |
+| `styles/Links.module.css` | Styles for the Planilha page. |
 | `styles/Layout.module.css` | Styles for the layout component. |
 | `styles/Settings.module.css` | Styles for the settings page. |
 | `styles/Upload.module.css` | Styles for the upload page. |
