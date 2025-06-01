@@ -288,47 +288,69 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const appendData = await appendRes.json();
 
-    if (isFirstBill && targetSheetId) {
-      await fetch(
-        `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            requests: [
-              {
-                repeatCell: {
-                  range: {
-                    sheetId: targetSheetId,
-                    startRowIndex: 2,
-                    endRowIndex: 3,
-                    startColumnIndex: 0,
-                    endColumnIndex: 6,
-                  },
-                  cell: {
-                    userEnteredFormat: {
-                      backgroundColor: {
-                        red: 44 / 255,
-                        green: 62 / 255,
-                        blue: 80 / 255,
+      if (isFirstBill && targetSheetId) {
+        await fetch(
+          `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}:batchUpdate`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              requests: [
+                {
+                  updateCells: {
+                    rows: [
+                      {
+                        values: [
+                          {
+                            userEnteredValue: { stringValue: 'Agent Bill' },
+                            userEnteredFormat: {
+                              textFormat: { fontSize: 40, bold: true },
+                            },
+                          },
+                        ],
                       },
-                      textFormat: {
-                        foregroundColor: { red: 1, green: 1, blue: 1 },
-                        bold: true,
+                    ],
+                    start: {
+                      sheetId: targetSheetId,
+                      rowIndex: 0,
+                      columnIndex: 0,
+                    },
+                    fields: 'userEnteredValue,userEnteredFormat.textFormat',
+                  },
+                },
+                {
+                  repeatCell: {
+                    range: {
+                      sheetId: targetSheetId,
+                      startRowIndex: 2,
+                      endRowIndex: 3,
+                      startColumnIndex: 0,
+                      endColumnIndex: 6,
+                    },
+                    cell: {
+                      userEnteredFormat: {
+                        backgroundColor: {
+                          red: 44 / 255,
+                          green: 62 / 255,
+                          blue: 80 / 255,
+                        },
+                        textFormat: {
+                          foregroundColor: { red: 1, green: 1, blue: 1 },
+                          bold: true,
+                        },
                       },
                     },
+                    fields: 'userEnteredFormat(backgroundColor,textFormat)',
                   },
-                  fields: 'userEnteredFormat(backgroundColor,textFormat)',
                 },
-              },
-            ],
-          }),
-        },
-      );
-    }
+              ],
+            }),
+          },
+        );
+      }
 
     if (targetSheetId) {
       await fetch(
