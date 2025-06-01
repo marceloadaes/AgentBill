@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ReactNode, useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import styles from '../styles/Layout.module.css';
 
 interface Props {
@@ -8,6 +9,7 @@ interface Props {
 
 export default function Layout({ children }: Props) {
   const [configured, setConfigured] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchConfig = () => {
@@ -27,6 +29,41 @@ export default function Layout({ children }: Props) {
       window.removeEventListener('config-changed', handler);
     };
   }, []);
+
+  useEffect(() => {
+    let startX = 0;
+    let startY = 0;
+    const pages = ['/', '/upload', '/links', '/settings'];
+
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      const endX = e.changedTouches[0].clientX;
+      const endY = e.changedTouches[0].clientY;
+      const diffX = endX - startX;
+      const diffY = endY - startY;
+      if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+        const currentIndex = pages.indexOf(router.pathname);
+        if (currentIndex !== -1) {
+          if (diffX < 0 && currentIndex < pages.length - 1) {
+            router.push(pages[currentIndex + 1]);
+          } else if (diffX > 0 && currentIndex > 0) {
+            router.push(pages[currentIndex - 1]);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchend', handleTouchEnd);
+    return () => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [router.pathname]);
 
   const renderLink = (
     href: string,
