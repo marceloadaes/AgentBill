@@ -18,7 +18,7 @@ const Links: NextPage = () => {
 
   return (
     <Layout>
-      <h2>Links externos</h2>
+      <h2>Planilha</h2>
       <h3>Visualização da Planilha de Contas</h3>
       {sheetId ? (
         <>

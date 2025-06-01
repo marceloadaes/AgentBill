@@ -32,12 +32,12 @@ const Home: NextPage = () => {
         )}
         {configured ? (
           <Link href="/links" className={styles.card}>
-            <h2>Links externos &rarr;</h2>
+            <h2>Planilha &rarr;</h2>
             <p>Acesse a planilha e seu calendário.</p>
           </Link>
         ) : (
           <span className={`${styles.card} ${styles.disabled}`}>
-            <h2>Links externos &rarr;</h2>
+            <h2>Planilha &rarr;</h2>
             <p>Acesse a planilha e seu calendário.</p>
           </span>
         )}
