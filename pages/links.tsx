@@ -20,22 +20,29 @@ const Links: NextPage = () => {
     <Layout>
       <h2>Links externos</h2>
       {sheetId ? (
-        <p>
-          A planilha a seguir contém todas as contas que você enviou:{' '}
-          <button
-            onClick={() =>
-              window.open(
-                `https://docs.google.com/spreadsheets/d/${sheetId}`,
-                '_blank',
-                'noopener,noreferrer'
-              )
-            }
-            className={styles.button}
-          >
-            {sheetName}
-          </button>
-          .
-        </p>
+        <>
+          <iframe
+            src={`https://docs.google.com/spreadsheets/d/${sheetId}/preview`}
+            className={styles.iframe}
+            title="Planilha"
+          />
+          <p>
+            A planilha a seguir contém todas as contas que você enviou:{' '}
+            <button
+              onClick={() =>
+                window.open(
+                  `https://docs.google.com/spreadsheets/d/${sheetId}`,
+                  '_blank',
+                  'noopener,noreferrer'
+                )
+              }
+              className={styles.button}
+            >
+              {sheetName}
+            </button>
+            .
+          </p>
+        </>
       ) : (
         <p>Planilha ainda não criada. Envie uma conta para gerar a planilha.</p>
       )}
