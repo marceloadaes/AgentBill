@@ -19,6 +19,7 @@ const Links: NextPage = () => {
   return (
     <Layout>
       <h2>Links externos</h2>
+      <h3>Visualização da Planilha de Contas</h3>
       {sheetId ? (
         <>
           <iframe
@@ -27,7 +28,7 @@ const Links: NextPage = () => {
             title="Planilha"
           />
           <p>
-            A planilha a seguir contém todas as contas que você enviou:{' '}
+            Abrir a planilha no Google Sheets{' '}
             <button
               onClick={() =>
                 window.open(
@@ -44,7 +45,7 @@ const Links: NextPage = () => {
           </p>
         </>
       ) : (
-        <p>Planilha ainda não criada. Envie uma conta para gerar a planilha.</p>
+        <p>A planilha será criada quando a primeira conta for escaneada.</p>
       )}
       <p>
         Consulte seu calendário no{' '}
