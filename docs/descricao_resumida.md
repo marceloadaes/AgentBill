@@ -1,5 +1,0 @@
-# Descrição Resumida do Projeto
-
-O objetivo deste projeto é desenvolver uma aplicação que auxilie a pequena empresa **Sequille** a organizar e automatizar seu atendimento comercial pelo WhatsApp, canal que concentra a maior parte das vendas. A aplicação permite construir uma árvore de menus interativos onde os clientes podem navegar por categorias de produtos, consultar o catálogo, selecionar itens, indicar preferências de entrega ou retirada, escolher a forma de pagamento e receber a confirmação do pedido sem necessidade de interação humana imediata.
-
-Além de facilitar a experiência do cliente, o sistema reduz o esforço manual da proprietária ao automatizar tarefas repetitivas. A administradora terá uma interface simples para editar menus, controlar a disponibilidade de produtos, acompanhar os pedidos em andamento e manter um histórico para análise e organização. Dessa forma, o negócio ganha escalabilidade, profissionalismo e mais tempo para focar na produção e no crescimento das vendas.
